@@ -30,13 +30,15 @@ class DroneVirtualGymWithViewer:
         self.state_bins = [
             np.linspace(0, self.room_width, 20),
             np.linspace(0, self.room_height, 20),
+            np.linspace(0, 300, 10),  # Altitude discretization (10 bins)
         ]
+
         self.observation_space = spaces.Box(
             low=np.array([0, 0]),
             high=np.array([self.room_width, self.room_height]),
             dtype=np.float32,
         )
-        self.action_space = spaces.Discrete(4)  # Actions: Up, Down, Left, Right
+        self.action_space = spaces.Discrete(6)  # Actions: Up, Down, Left, Right, Ascend, Descend
         self.viewer = drone.viewer
         self.state = None
 
@@ -47,22 +49,27 @@ class DroneVirtualGymWithViewer:
 
     def reset(self):
         """
-        Reset the drone to a random position in the room.
+        Reset the drone to a random position in the room, including altitude.
         """
         self.state = np.array([
             random.uniform(0, self.room_width),
             random.uniform(0, self.room_height),
+            random.uniform(0, 300),  # Random altitude (0 to 300 cm)
         ])
-        self.drone.locate(self.state[0], self.state[1], 0, self.room)
+        self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
+
+        # Reset visited states at the start of each episode
+        self.visited_states = set()
+
         return self.discretize_state(self.state)
 
     def step(self, action):
         """
         Execute a step in the environment based on the chosen action.
-        :param action: The action to take (0: Up, 1: Down, 2: Left, 3: Right).
+        :param action: The action to take (0: Up, 1: Down, 2: Left, 3: Right, 4: Ascend, 5: Descend).
         :return: next_state, reward, done, info
         """
-        x, y = self.state
+        x, y, z = self.state
         if action == 0 and y < self.room_height:  # Up
             y += 20
         elif action == 1 and y > 0:  # Down
@@ -71,41 +78,45 @@ class DroneVirtualGymWithViewer:
             x -= 20
         elif action == 3 and x < self.room_width:  # Right
             x += 20
+        elif action == 4 and z < 300:  # Ascend (max altitude = 300 cm)
+            z += 20
+        elif action == 5 and z > 0:  # Descend (min altitude = 0 cm)
+            z -= 20
 
-        self.state = np.array([x, y])
-        self.drone.locate(self.state[0], self.state[1], 0, self.room)
+        self.state = np.array([x, y, z])
+        self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
 
-        done = self.compute_reward(self.state) >= 500  # End if the target is reached
         reward = self.compute_reward(self.state)
+        done = reward >= 500  # End if the target is reached
         return self.discretize_state(self.state), reward, done, {}
 
     def compute_reward(self, state):
         """
         Compute the reward for the current state of the drone.
-        :param state: The current state of the drone.
-        :return: Reward value.
         """
         distance = np.linalg.norm(state - self.target_position)
 
-        # Check for a crash (outside room boundaries)
-        if state[0] < 0 or state[0] > self.room_width or state[1] < 0 or state[1] > self.room_height:
-            return -200  # Reduced crash penalty
+        # Check for a crash (outside room boundaries or altitude limits)
+        if state[0] < 0 or state[0] > self.room_width or state[1] < 0 or state[1] > self.room_height or state[2] < 0 or \
+                state[2] > 300:
+            return -200  # Crash penalty
 
         # Reward for reaching the exact location of the target
-        if np.allclose(state, self.target_position, atol=1e-2):  # Adjust tolerance as needed
-            return 500  # Increased reward for reaching the target
+        if np.allclose(state, self.target_position, atol=1e-2):
+            return 500  # High reward for reaching the target
 
         # Reward for detecting the target
         if self.drone.isTargetDetected():
-            return 50  # Increased reward for detecting the target
+            return 100 - distance  # Scaled reward for getting closer
 
-        # Reward gradient based on distance to target
-        if distance <= self.radius_detection:
-            return 100 - distance  # Reward increases as the drone gets closer
+        # Penalize repetitive states
+        if tuple(state) in self.visited_states:
+            return -50  # Penalty for oscillating
 
-        # Penalize for each step
-        step_penalty = -0.1  # Further reduced penalty for each step
+        # Penalize small movement steps or lack of progress
+        step_penalty = -0.5
 
+        self.visited_states.add(tuple(state))  # Add the current state to visited states
         return step_penalty
 
 
@@ -121,32 +132,46 @@ def create_environment_with_viewer():
     return drone
 
 
-def replay_episode(trajectory, env):
+def plot_trajectory(trajectory, room_width, room_height):
     """
-    Replay an episode using the saved trajectory.
-    :param trajectory: List of (state, action, reward) tuples from the best episode.
-    :param env: The environment (DroneVirtualGymWithViewer).
-    """
-    print("Replaying the best episode...")
-
-    for state, action, reward in trajectory:
-        env.drone.locate(state[0], state[1], 0, env.room)  # Update the drone's position
-        env.viewer.render()  # Update the viewer (if supported by the ViewerTkMPL)
-        print(f"State: {state}, Action: {action}, Reward: {reward}")
-
-
-def plot_trajectory(trajectory):
-    """
-    Plot the trajectory of the drone in 2D.
+    Plot the drone trajectory in physical room dimensions.
     """
     positions = [state for state, _, _ in trajectory]
-    x, y = zip(*positions)
-    plt.figure()
-    plt.plot(x, y, marker='o')
+    x, y = zip(*positions)  # Extract x and y positions
+
+    plt.figure(figsize=(8, 6))
+    plt.plot(x, y, marker='o', label="Trajectory")
     plt.title("Drone Trajectory - Best Episode")
-    plt.xlabel("X Position")
-    plt.ylabel("Y Position")
+    plt.xlabel("X Position (cm)")
+    plt.ylabel("Y Position (cm)")
+    plt.xlim(0, room_width)
+    plt.ylim(0, room_height)
+    plt.grid(True)
+    plt.legend()
     plt.show()
+
+
+def plot_3d_trajectory(trajectory, room_width, room_height, room_depth=300):
+    """
+    Plot the drone trajectory in 3D physical room dimensions.
+    """
+    positions = [state for state, _, _ in trajectory]
+    x, y, z = zip(*positions)  # Extract x, y, and z positions
+
+    fig = plt.figure(figsize=(10, 8))
+    ax = fig.add_subplot(111, projection='3d')
+    ax.plot(x, y, z, marker='o', label="Trajectory")
+    ax.set_title("3D Drone Trajectory - Best Episode")
+    ax.set_xlabel("X Position (cm)")
+    ax.set_ylabel("Y Position (cm)")
+    ax.set_zlabel("Z Position (cm)")
+    ax.set_xlim(0, room_width)
+    ax.set_ylim(0, room_height)
+    ax.set_zlim(0, room_depth)
+    ax.grid(True)
+    ax.legend()
+    plt.show()
+
 
 
 # Initialize the environment
@@ -182,7 +207,7 @@ for episode in range(num_episodes):
         action = np.argmax(q_table[state]) if random.uniform(0, 1) > epsilon else env_with_viewer.action_space.sample()
         next_state, reward, done, _ = env_with_viewer.step(action)
 
-        trajectory.append((state, action, reward))
+        trajectory.append((env_with_viewer.state.copy(), action, reward))
 
         # Update Q-table
         old_value = q_table[state][action]
@@ -212,8 +237,6 @@ plt.xlabel("Episode")
 plt.ylabel("Total Reward")
 plt.show()
 
-# Replay the best episode
-replay_episode(best_episode_trajectory, env_with_viewer)
-
 # Plot the trajectory of the best episode
-plot_trajectory(best_episode_trajectory)
+plot_trajectory(best_episode_trajectory, env_with_viewer.room_width, env_with_viewer.room_height)
+plot_3d_trajectory(best_episode_trajectory, env_with_viewer.room_width, env_with_viewer.room_height, room_depth=300)

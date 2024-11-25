@@ -225,6 +225,17 @@ class ViewerTkMPL(AViewer):
             self.window.update()
             time.sleep(d)
 
+    def render(self):
+        """
+        Render the current state of the viewer.
+        """
+        try:
+            # Call existing methods to update the visualization (example names)
+            self.update_canvas()  # Ensure the canvas reflects current state
+            self.window.update()  # Refresh the Tkinter window
+        except AttributeError:
+            print("ViewerTkMPL does not support rendering. Skipping visualization.")
+
 
 class NavToolbarTk(NavigationToolbar2Tk):
     """
@@ -240,7 +251,10 @@ class NavToolbarTk(NavigationToolbar2Tk):
     def _Button(self, text, image_file, toggle, command):
         #b = super()._Button(text, image_file, toggle, command)
         if image_file.find("_large") == -1:
-            (name, ext) = image_file.split(".")
+            try:
+                (name, ext) = image_file.rsplit(".", 1)  # Use rsplit to handle multiple periods
+            except ValueError:
+                raise ValueError(f"Invalid image file format: {image_file}")
             image_file = name + "_large." + ext
         img_file = os.path.join(mpl.get_data_path(), 'images', image_file)
         im = tk.PhotoImage(master=self, file=img_file)
