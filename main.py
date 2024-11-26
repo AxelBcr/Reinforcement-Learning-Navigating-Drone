@@ -115,23 +115,25 @@ class DroneVirtualGymWithViewer:
         # Check if the drone has reached the target
         if np.linalg.norm(state - self.target_position) < 10:  # 10 cm tolerance
             # Add reward for reaching the target quickly
+            #IA maligne au point de faire exprès de faire moins de pas à un épisode
+            # pour obtenir une meilleure récompense à l'épisode suivant ?
             remaining_steps = max_steps - step_count
-            return 1000 + remaining_steps * 10  # Large reward for reaching quickly
+            return (1000 + remaining_steps) * 10  # Large reward for reaching quickly
 
         # Positive reward for moving closer to the target
         delta_distance = self.prev_distance - distance
         if delta_distance > 0:
-            reward += delta_distance * 50  # Reward for getting closer
+            reward += delta_distance * 100  # Reward for getting closer
         else:
-            reward -= 50  # Penalty for moving further away
+            reward -= delta_distance * 100  # Penalty for moving further away
 
         # Penalty for excessive steps
         if step_count > max_steps:
-            reward -= 10  # Penalty for exceeding step limit
+            reward -= step_count * 50  # Penalty for exceeding step limit
 
         # Penalty for oscillations or revisiting states
         if tuple(state) in self.visited_states:
-            reward -= 100  # Penalize oscillating behavior
+            reward -= 50  # Penalize oscillating behavior
 
         self.visited_states.add(tuple(state))
         self.prev_distance = distance
@@ -179,12 +181,12 @@ drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtualGymWithViewer(drone, room, room_size=(500, 1000, 300))
 
 # Training
-num_episodes = 1000
-max_steps_per_episode = 200
-alpha = 0.1
+num_episodes = 3000
+max_steps_per_episode = 350
+alpha = 0.09
 gamma = 0.98
 epsilon = 1.0
-epsilon_decay = 0.92
+epsilon_decay = 0.96
 epsilon_min = 0.01
 
 q_table = np.zeros((20, 20, 10, 6))
