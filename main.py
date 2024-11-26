@@ -30,7 +30,7 @@ class DroneVirtualGymWithViewer:
         # Action space: (direction, distance)
         self.action_space = spaces.Tuple((
             spaces.Discrete(6),  # 6 directions
-            spaces.Discrete(50)  # Distance from 1 to 50 cm
+            spaces.Discrete(20, 50)  # Distance from 1 to 50 cm
         ))
         self.viewer = drone.viewer
         self.state = None
@@ -249,7 +249,7 @@ with open("best_episode_commands.py", "w") as f:
     # Save initial drone position and heading
     initial_x, initial_y, initial_z = best_episode_trajectory[0]
     initial_heading = 180  # Modify based on actual logic
-    f.write(f"    locate({initial_x}, {initial_y}, {initial_heading})\n")
+    f.write(f"    locate({initial_y}, {initial_x}, {initial_heading})\n")
 
     # Add movement commands
     f.write("    takeOff()\n")
@@ -265,8 +265,7 @@ with open("best_episode_commands.py", "w") as f:
 
     # Save target position
     target_x, target_y, target_z = env_with_viewer.target_position
-    f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
-            f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
+    f.write(f"createDefineTarget({target_y}, {target_x}, {target_z})\n")
 
     # Save drone creation
     f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
