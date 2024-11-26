@@ -5,29 +5,13 @@ from gym import spaces
 from dronecmds import createRoom, createDrone, createTarget
 from mpl_toolkits.mplot3d import Axes3D
 
-
-def create_random_target():
-    """
-    Create a random target using the `createTarget()` function.
-    Fallback mechanism: Place target randomly if `createTarget()` fails.
-    """
-    # Fallback: Manually place the target at a random position
-    print("Fallback: Manually placing target at a random valid location.")
-    x = random.uniform(0, 500)
-    y = random.uniform(0, 1000)
-    z = random.uniform(0, 300)
-    print(f"Fallback Target Placed: x={x}, y={y}, z={z}")
-    return np.array([x, y, z])
-
-
-
+#%% DroneVirtualGymWithViewer, Compute_Reward, Step, Reset, Target, Room
 class DroneVirtualGymWithViewer:
     def __init__(self, drone, room, room_size=(500, 1000, 300), max_steps=200):
-        # Initialize as before
         self.drone = drone
         self.room = room
-        self.room_width, self.room_height, self.room_depth = room_size
-        self.target_position = create_random_target()  # Set target once here
+        self.room_width, self.room_depth, self.room_height = room_size
+        self.target_position = self.create_random_target()  # Set target once here
         self.radius_detection = 50
         self.max_steps = max_steps
         self.step_count = 0
@@ -35,56 +19,71 @@ class DroneVirtualGymWithViewer:
         # Discretize observation space
         self.state_bins = [
             np.linspace(0, self.room_width, 20),
-            np.linspace(0, self.room_height, 20),
-            np.linspace(0, self.room_depth, 10),
+            np.linspace(0, self.room_depth, 20),
+            np.linspace(0, self.room_height, 10),
         ]
         self.observation_space = spaces.Box(
             low=np.array([0, 0, 0]),
-            high=np.array([self.room_width, self.room_height, self.room_depth]),
+            high=np.array([self.room_width, self.room_height, self.room_height]),
             dtype=np.float32,
         )
-        self.action_space = spaces.Discrete(6)
+        # Action space: (direction, distance)
+        self.action_space = spaces.Tuple((
+            spaces.Discrete(6),  # 6 directions
+            spaces.Discrete(50)  # Distance from 1 to 50 cm
+        ))
         self.viewer = drone.viewer
         self.state = None
         self.prev_distance = float('inf')
+
+    def create_random_target(self):
+        """
+        Create a random target within the room.
+        """
+        x = random.uniform(0, self.room_width)
+        y = random.uniform(0, self.room_height)
+        z = random.uniform(0, self.room_height)
+        return np.array([x, y, z])
 
     def reset(self):
         """
         Reset the drone to a random position. Target remains fixed.
         """
-        # Reset drone position
         self.state = np.array([
             random.uniform(0, self.room_width),
             random.uniform(0, self.room_height),
-            random.uniform(0, self.room_depth),
+            random.uniform(0, self.room_height),
         ])
         self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
 
         # Reset variables
         self.visited_states = set()
         self.prev_distance = np.linalg.norm(self.state - self.target_position)
-        self.step_count = 0  # Reset step count
+        self.step_count = 0
 
         return self.discretize_state(self.state)
-
 
     def step(self, action):
         """
         Execute a step in the environment based on the chosen action.
+        `action` is a tuple (direction, distance).
         """
+        direction, distance = action
+        distance += 1  # Convert to 1-50 cm range for movement
+
         x, y, z = self.state
-        if action == 0 and y < self.room_height:  # Move Up
-            y += 20
-        elif action == 1 and y > 0:  # Move Down
-            y -= 20
-        elif action == 2 and x > 0:  # Move Left
-            x -= 20
-        elif action == 3 and x < self.room_width:  # Move Right
-            x += 20
-        elif action == 4 and z < self.room_depth:  # Ascend
-            z += 20
-        elif action == 5 and z > 0:  # Descend
-            z -= 20
+        if direction == 0 and y + distance <= self.room_height:  # Move Up
+            y += distance
+        elif direction == 1 and y - distance >= 0:  # Move Down
+            y -= distance
+        elif direction == 2 and x - distance >= 0:  # Move Left
+            x -= distance
+        elif direction == 3 and x + distance <= self.room_width:  # Move Right
+            x += distance
+        elif direction == 4 and z + distance <= self.room_height:  # Ascend
+            z += distance
+        elif direction == 5 and z - distance >= 0:  # Descend
+            z -= distance
 
         self.state = np.array([x, y, z])
         self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
@@ -94,7 +93,7 @@ class DroneVirtualGymWithViewer:
 
         # Compute reward
         reward = self.compute_reward(self.state, self.step_count, self.max_steps)
-        done = reward >= 1000 or self.step_count >= self.max_steps  # End if target reached or max steps exceeded
+        done = reward >= 1000 or self.step_count >= self.max_steps
         return self.discretize_state(self.state), reward, done, {}
 
     def compute_reward(self, state, step_count, max_steps):
@@ -102,39 +101,18 @@ class DroneVirtualGymWithViewer:
         Compute the reward for the current state of the drone.
         """
         distance = np.linalg.norm(state - self.target_position)
-        reward = 0  # Base reward
+        reward = 0
 
-        # Check if the drone crashes (goes out of bounds)
-        if (
-            state[0] < 0 or state[0] > self.room_width or
-            state[1] < 0 or state[1] > self.room_height or
-            state[2] < 0 or state[2] > self.room_depth
-        ):
-            return -1000  # Large penalty for crashing
-
-        # Check if the drone has reached the target
-        if np.linalg.norm(state - self.target_position) < 10:  # 10 cm tolerance
-            # Add reward for reaching the target quickly
-            #IA maligne au point de faire exprès de faire moins de pas à un épisode
-            # pour obtenir une meilleure récompense à l'épisode suivant ?
+        if np.linalg.norm(state - self.target_position) <= 10:  # Reached target
             remaining_steps = max_steps - step_count
-            return (1000 + remaining_steps)  # Large reward for reaching quickly
+            return (100000 + remaining_steps*10)  # Large reward for reaching quickly
 
-        # Positive reward for moving closer to the target
         delta_distance = self.prev_distance - distance
-        if delta_distance > 0:
-            reward += delta_distance * 10  # Reward for getting closer
-        else:
-            reward -= delta_distance * 100  # Penalty for moving further away
+        reward += delta_distance * 10 if delta_distance > 0 else delta_distance * 100
 
-        # Penalty for excessive steps
-        if step_count > max_steps:
-            reward -= step_count * 50  # Penalty for exceeding step limit
-
-        # Penalty for oscillations or revisiting states
+        # Penalty for oscillating
         if tuple(state) in self.visited_states:
-            reward -= 50*len(self.visited_states)  # Penalize oscillating behavior
-
+            reward -= 50
         self.visited_states.add(tuple(state))
         self.prev_distance = distance
 
@@ -150,37 +128,14 @@ class DroneVirtualGymWithViewer:
         return tuple(discretized)
 
 
-
-def plot_trajectory(trajectory, room_width, room_height, room_depth):
-    """
-    Plot the trajectory of the drone in 3D space.
-    """
-    x, y, z = zip(*trajectory)
-
-    fig = plt.figure(figsize=(10, 7))
-    ax = fig.add_subplot(111, projection='3d')
-    ax.plot(x, y, z, marker='o', label='Trajectory')
-    ax.set_title("3D Drone Trajectory - Best Episode")
-    ax.set_xlabel("X Position (cm)")
-    ax.set_ylabel("Y Position (cm)")
-    ax.set_zlabel("Z Position (cm)")
-    ax.set_xlim([0, room_width])
-    ax.set_ylim([0, room_height])
-    ax.set_zlim([0, room_depth])
-    ax.legend()
-    plt.show()
-
-
-# Main Code
-
-# Initialize environment
+#%% Main code & Hyperparameters
 room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
 room_height = 300
 room = createRoom(room_description, room_height)
 drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtualGymWithViewer(drone, room, room_size=(500, 1000, 300))
 
-# Training
+# Training parameters
 num_episodes = 5000
 max_steps_per_episode = 30
 alpha = 0.09
@@ -189,51 +144,64 @@ epsilon = 1.0
 epsilon_decay = 0.96
 epsilon_min = 0.01
 
-q_table = np.zeros((20, 20, 10, 6))
+#%% Initialize Q-table
+q_table = np.zeros((20, 20, 10, 6, 50))  # Adding distance dimension
 episode_rewards = []
 best_episode_trajectory = []
+best_episode_actions = []
 best_episode_reward = -float('inf')
 
 for episode in range(num_episodes):
     state = env_with_viewer.reset()
     total_reward = 0
     trajectory = []
+    trajectory_actions = []
     done = False
 
     for step in range(max_steps_per_episode):
         if np.random.random() < epsilon:
-            action = np.random.choice(env_with_viewer.action_space.n)
+            # Random exploration
+            direction = np.random.choice(6)
+            distance = np.random.choice(50)  # Valid range is 0-49 for Q-table
+            action = (direction, distance)
         else:
-            action = np.argmax(q_table[state])
+            # Exploitation: choose the best action
+            action = np.unravel_index(np.argmax(q_table[state]), q_table[state].shape)
 
+        # Perform the action and observe the result
         next_state, reward, done, _ = env_with_viewer.step(action)
-        old_value = q_table[state][action]
+        old_value = q_table[state][action[0]][action[1]]
         next_max = np.max(q_table[next_state])
 
-        q_table[state][action] = old_value + alpha * (reward + gamma * next_max - old_value)
+        # Update Q-value
+        q_table[state][action[0]][action[1]] = old_value + alpha * (reward + gamma * next_max - old_value)
 
         state = next_state
         total_reward += reward
         trajectory.append(env_with_viewer.state)
+        trajectory_actions.append(action)
 
         if done:
             break
 
+    # Decay epsilon
     epsilon = max(epsilon * epsilon_decay, epsilon_min)
     episode_rewards.append(total_reward)
 
+    # Track the best episode
     if total_reward > best_episode_reward:
         best_episode_reward = total_reward
         best_episode_trajectory = trajectory
+        best_episode_actions = trajectory_actions
 
-
-# Plot episode rewards as a 2D plot
-plt.figure()
+#%%Plot
+plt.figure()  # Create a new figure for 2D plotting reward
 plt.plot(episode_rewards)
-plt.title("Rewards per Episode (with Viewer)")
+plt.title("Rewards per Episode")
 plt.xlabel("Episode")
 plt.ylabel("Total Reward")
 plt.show()
+
 
 # 3D trajectory visualization for the best episode
 fig = plt.figure()
@@ -256,6 +224,46 @@ ax.set_ylabel("Y Position (cm)")
 ax.set_zlabel("Z Position (cm)")
 ax.legend()
 
-# Show the plot
+# Show the 3D plot
 plt.show()
+#%% Convert actions to commands
+actions_to_commands = {
+    0: "forward",
+    1: "backward",
+    2: "goLeft",
+    3: "goRight",
+    4: "goUp",
+    5: "goDown"
+}
 
+commands = []
+for direction, distance in best_episode_actions:
+    command = f"{actions_to_commands[direction]}({distance + 1})"
+    commands.append(command)
+
+# Save commands to a Python file
+with open("best_episode_commands.py", "w") as f:
+    f.write("from dronecmds import *\n\n")
+    f.write("def replay_best_episode():\n")
+
+    # Save room setup
+    room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
+    room_height = 300
+    f.write(f"    createRoom('{room_description}', {room_height})\n")
+
+    # Save initial drone position and heading
+    initial_x, initial_y, initial_z = best_episode_trajectory[0]
+    initial_heading = 0  # Modify based on actual logic
+    f.write(f"    locate({initial_x}, {initial_y}, {initial_heading})\n")
+
+    # Save target position
+    target_x, target_y, target_z = env_with_viewer.target_position
+    f.write(f"    createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
+            f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
+
+    # Add movement commands
+    f.write("    takeOff()\n")
+    for direction, distance in best_episode_actions:
+        command = f"{actions_to_commands[direction]}({distance + 1})"
+        f.write(f"    {command}\n")
+    f.write("    land()\n")
