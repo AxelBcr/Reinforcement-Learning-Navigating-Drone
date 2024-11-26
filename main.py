@@ -246,20 +246,10 @@ with open("best_episode_commands.py", "w") as f:
     f.write("from dronecmds import *\n\n")
     f.write("def replay_best_episode():\n")
 
-    # Save room setup
-    room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
-    room_height = 300
-    f.write(f"    createRoom('{room_description}', {room_height})\n")
-
     # Save initial drone position and heading
     initial_x, initial_y, initial_z = best_episode_trajectory[0]
-    initial_heading = 0  # Modify based on actual logic
+    initial_heading = 180  # Modify based on actual logic
     f.write(f"    locate({initial_x}, {initial_y}, {initial_heading})\n")
-
-    # Save target position
-    target_x, target_y, target_z = env_with_viewer.target_position
-    f.write(f"    createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
-            f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
 
     # Add movement commands
     f.write("    takeOff()\n")
@@ -267,3 +257,17 @@ with open("best_episode_commands.py", "w") as f:
         command = f"{actions_to_commands[direction]}({distance + 1})"
         f.write(f"    {command}\n")
     f.write("    land()\n")
+
+    # Save room setup
+    room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
+    room_height = 300
+    f.write(f"createRoom('{room_description}', {room_height})\n")
+
+    # Save target position
+    target_x, target_y, target_z = env_with_viewer.target_position
+    f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
+            f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
+
+    # Save drone creation
+    f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
+
