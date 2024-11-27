@@ -5,13 +5,20 @@ from gym import spaces
 from dronecmds import createRoom, createDrone, createTarget
 from mpl_toolkits.mplot3d import Axes3D
 
-#%% DroneVirtualGymWithViewer, Compute_Reward, Step, Reset, Target, Room
+target_x = int(input("Enter the x coordinate of the target: "))
+target_y = int(input("Enter the y coordinate of the target: "))
+target_z = int(input("Enter the z coordinate of the target: "))
+
+drone_x = int(input("Enter the x coordinate of the drone: "))
+drone_y = int(input("Enter the y coordinate of the drone: "))
+
+#%% DroneVirtual, Compute_Reward, Step, Reset, Target, Room
 class DroneVirtual:
     def __init__(self, drone, room, room_size=(500, 1000, 300), max_steps=200):
         self.drone = drone
         self.room = room
         self.room_width, self.room_depth, self.room_height = room_size
-        self.target_position = self.create_random_target()  # Set target once here
+        self.target_position = self.create_target()  # Set target once here
         self.radius_detection = 50
         self.max_steps = max_steps
         self.step_count = 0
@@ -30,30 +37,24 @@ class DroneVirtual:
         # Action space: (direction, distance)
         self.action_space = spaces.Tuple((
             spaces.Discrete(6),  # 6 directions
-            spaces.Discrete(20, 50)  # Distance from 1 to 50 cm
+            spaces.Discrete(50)  # Distance from 0 to 50 cm
         ))
         self.viewer = drone.viewer
         self.state = None
         self.prev_distance = float('inf')
 
-    def create_random_target(self):
+    def create_target(self):
         """
         Create a random target within the room.
         """
-        x = random.uniform(0, self.room_width)
-        y = random.uniform(0, self.room_height)
-        z = random.uniform(0, self.room_height)
-        return np.array([x, y, z])
+        return np.array([target_x, target_y, target_z])
 
     def reset(self):
         """
-        Reset the drone to a random position. Target remains fixed.
+        Reset the drone to a fixed position. Target remains fixed.
         """
-        self.state = np.array([
-            random.uniform(0, self.room_width),
-            random.uniform(0, self.room_height),
-            random.uniform(0, self.room_height),
-        ])
+        # Fixed drone initial position
+        self.state = np.array([drone_x, drone_y, 80])  # Replace with your desired coordinates
         self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
 
         # Reset variables
@@ -100,20 +101,35 @@ class DroneVirtual:
         """
         Compute the reward for the current state of the drone.
         """
+        # Calculate the distance from the drone to the target
         distance = np.linalg.norm(state - self.target_position)
         reward = 0
 
-        if np.linalg.norm(state - self.target_position) <= 10:  # Reached target
+        # Check if the drone has reached the target
+        if distance <= 5:  # Within 2 cm of the target
             remaining_steps = max_steps - step_count
-            return (100000 + remaining_steps*10)  # Large reward for reaching quickly
+            reward = 1000 + remaining_steps * 10  # Large reward for reaching target quickly
+            return reward  # Return immediately when the target is reached
 
+        # Calculate the change in distance from the previous state
         delta_distance = self.prev_distance - distance
-        reward += delta_distance * 10 if delta_distance > 0 else delta_distance * 100
 
-        # Penalty for oscillating
-        if tuple(state) in self.visited_states:
-            reward -= 50
-        self.visited_states.add(tuple(state))
+        # Reward or penalize based on the change in distance
+        if delta_distance > 0:
+            reward += delta_distance * 10  # Reward for reducing distance
+        else:
+            reward += delta_distance * 10  # Smaller penalty for moving away
+
+        # Penalty for revisiting states (to discourage oscillation)
+        discretized_state = tuple(map(int, state // 10))  # Discretize state to avoid floating-point issues
+        if discretized_state in self.visited_states:
+            reward -= 100  # Penalty for revisiting a state
+        self.visited_states.add(discretized_state)
+
+        # Small penalty for each step to encourage efficiency
+        reward -= 0.1 * step_count  # Scaled penalty based on step count
+
+        # Update the previous distance for the next step
         self.prev_distance = distance
 
         return reward
@@ -137,7 +153,7 @@ env_with_viewer = DroneVirtual(drone, room, room_size=(500, 1000, 300))
 
 # Training parameters
 num_episodes = 5000
-max_steps_per_episode = 30
+max_steps_per_episode = 500
 alpha = 0.09
 gamma = 0.98
 epsilon = 1.0
@@ -221,19 +237,26 @@ ax.plot(trajectory[:, 0], trajectory[:, 1], trajectory[:, 2], label="Trajectory"
 ax.scatter(trajectory[0, 0], trajectory[0, 1], trajectory[0, 2], color='green', label="Start Point", s=100)
 ax.scatter(trajectory[-1, 0], trajectory[-1, 1], trajectory[-1, 2], color='red', label="End Point", s=100)
 
+# Plot the target position
+target_x, target_y, target_z = env_with_viewer.target_position  # Replace with actual target position
+ax.scatter(target_x, target_y, target_z, color='blue', label="Target", s=100)  # Add marker for target
+# Annotate the target position
+ax.text(target_x, target_y, target_z, 'Target', color='blue', fontsize=12)
+
+
 # Fix axis labels and limits
 ax.set_title("3D Drone Trajectory - Best Episode")
-ax.set_xlabel("Y Position (cm)")
-ax.set_ylabel("X Position (cm)")
+ax.set_xlabel("X Position (cm)")
+ax.set_ylabel("Y Position (cm)")
 ax.set_zlabel("Z Position (cm)")
 
 # Ensure axis limits match the room dimensions
 room_width = 1000  # Replace with your simulation room width
-room_height = 500  # Replace with your simulation room depth
-room_depth = 300   # Replace with your simulation room height
-ax.set_xlim([0, room_width])
-ax.set_ylim([0, room_height])
-ax.set_zlim([0, room_depth])
+room_depth = 500  # Replace with your simulation room depth
+room_height = 300   # Replace with your simulation room height
+ax.set_ylim([room_width, 0])
+ax.set_xlim([room_depth, 0])
+ax.set_zlim([0, room_height])
 
 # Add legend
 ax.legend()
@@ -255,35 +278,32 @@ for direction, distance in best_episode_actions:
     command = f"{actions_to_commands[direction]}({distance + 1})"
     commands.append(command)
 
+# Extract positions from the environment
+initial_heading = 90  # Modify based on actual logic
+
 # Save commands to a Python file
 with open("best_episode_commands.py", "w") as f:
     f.write("from dronecmds import *\n\n")
     f.write("def replay_best_episode():\n")
 
     # Save initial drone position and heading
-    initial_x, initial_y, initial_z = best_episode_trajectory[0]
-    initial_heading = 180  # Modify based on actual logic
-    f.write(f"    locate({initial_x}, {initial_y}, {initial_heading})\n")
+    f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
 
     # Add movement commands
     f.write(f"    takeOff()\n")
-    if initial_z >= 80:
-        f.write(f"    goUp({initial_z-80})\n")
-    else:
-        f.write(f"    goDown({80 - (80-initial_z)})\n")
     for direction, distance in best_episode_actions:
         command = f"{actions_to_commands[direction]}({distance + 1})"
         f.write(f"    {command}\n")
     f.write("    land()\n")
 
-    # Save room setup
+    # Room setup
     room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
     room_height = 300
     f.write(f"createRoom('{room_description}', {room_height})\n")
 
-    # Save target position
-    target_x, target_y, target_z = env_with_viewer.target_position
-    f.write(f"createDefineTarget({target_y}, {target_x}, {target_z})\n")
+    # Target position
+    f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
+            f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
 
     # Save drone creation
     f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
