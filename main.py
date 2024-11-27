@@ -195,11 +195,15 @@ for episode in range(num_episodes):
         best_episode_actions = trajectory_actions
 
 #%%Plot
-plt.figure()  # Create a new figure for 2D plotting reward
-plt.plot(episode_rewards)
-plt.title("Rewards per Episode")
+
+# Plot the episode rewards
+plt.figure(figsize=(10, 6))
+plt.plot(episode_rewards, label="Episode Reward")
+plt.title("Training Rewards Per Episode")
 plt.xlabel("Episode")
 plt.ylabel("Total Reward")
+plt.legend()
+plt.grid(True)
 plt.show()
 
 
@@ -207,26 +211,36 @@ plt.show()
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 
-# Convert the best trajectory to a NumPy array
+# Convert trajectory to a NumPy array for easier slicing
 trajectory = np.array(best_episode_trajectory)
 
 # Plot the trajectory
 ax.plot(trajectory[:, 0], trajectory[:, 1], trajectory[:, 2], label="Trajectory", color='blue')
 
-# Highlight the start and end points
-ax.scatter(trajectory[0, 0], trajectory[0, 1], trajectory[0, 2], color='green', label="Start Point", s=100)  # Start point
-ax.scatter(trajectory[-1, 0], trajectory[-1, 1], trajectory[-1, 2], color='red', label="End Point", s=100)   # End point
+# Highlight start and end points
+ax.scatter(trajectory[0, 0], trajectory[0, 1], trajectory[0, 2], color='green', label="Start Point", s=100)
+ax.scatter(trajectory[-1, 0], trajectory[-1, 1], trajectory[-1, 2], color='red', label="End Point", s=100)
 
-# Add titles and labels
+# Fix axis labels and limits
 ax.set_title("3D Drone Trajectory - Best Episode")
-ax.set_xlabel("X Position (cm)")
-ax.set_ylabel("Y Position (cm)")
+ax.set_xlabel("Y Position (cm)")
+ax.set_ylabel("X Position (cm)")
 ax.set_zlabel("Z Position (cm)")
+
+# Ensure axis limits match the room dimensions
+room_width = 1000  # Replace with your simulation room width
+room_height = 500  # Replace with your simulation room depth
+room_depth = 300   # Replace with your simulation room height
+ax.set_xlim([0, room_width])
+ax.set_ylim([0, room_height])
+ax.set_zlim([0, room_depth])
+
+# Add legend
 ax.legend()
 
-# Show the 3D plot
+# Show the plot
 plt.show()
-#%% Convert actions to commands
+#%% Convert actions to commands (wrong thing about coords)
 actions_to_commands = {
     0: "forward",
     1: "backward",
