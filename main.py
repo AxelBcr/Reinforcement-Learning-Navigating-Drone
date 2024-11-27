@@ -279,6 +279,7 @@ for direction, distance in best_episode_actions:
     commands.append(command)
 
 # Extract positions from the environment
+#Just delete that and set the heading to 90 using f.write
 initial_heading = 90  # Modify based on actual logic
 
 # Save commands to a Python file
