@@ -6,7 +6,7 @@ from dronecmds import createRoom, createDrone, createTarget
 from mpl_toolkits.mplot3d import Axes3D
 
 #%% DroneVirtualGymWithViewer, Compute_Reward, Step, Reset, Target, Room
-class DroneVirtualGymWithViewer:
+class DroneVirtual:
     def __init__(self, drone, room, room_size=(500, 1000, 300), max_steps=200):
         self.drone = drone
         self.room = room
@@ -133,7 +133,7 @@ room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
 room_height = 300
 room = createRoom(room_description, room_height)
 drone = createDrone("DroneVirtual", "ViewerTkMPL")
-env_with_viewer = DroneVirtualGymWithViewer(drone, room, room_size=(500, 1000, 300))
+env_with_viewer = DroneVirtual(drone, room, room_size=(500, 1000, 300))
 
 # Training parameters
 num_episodes = 5000
@@ -249,10 +249,14 @@ with open("best_episode_commands.py", "w") as f:
     # Save initial drone position and heading
     initial_x, initial_y, initial_z = best_episode_trajectory[0]
     initial_heading = 180  # Modify based on actual logic
-    f.write(f"    locate({initial_y}, {initial_x}, {initial_heading})\n")
+    f.write(f"    locate({initial_x}, {initial_y}, {initial_heading})\n")
 
     # Add movement commands
-    f.write("    takeOff()\n")
+    f.write(f"    takeOff()\n")
+    if initial_z >= 80:
+        f.write(f"    goUp({initial_z-80})\n")
+    else:
+        f.write(f"    goDown({80 - (80-initial_z)})\n")
     for direction, distance in best_episode_actions:
         command = f"{actions_to_commands[direction]}({distance + 1})"
         f.write(f"    {command}\n")
