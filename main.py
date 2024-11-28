@@ -162,7 +162,7 @@ drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtual(drone, room, room_size=(room_x, room_y, room_height))
 
 # Training parameters
-alpha = 0.09 #Learning rate
+alpha = 0.5 #Learning rate
 gamma = 0.98 #Importance of future rewards
 epsilon = 1.0 #Randomness rate
 epsilon_decay = 0.96 #Randomness decay rate
@@ -196,7 +196,7 @@ def smooth_commands(commands):
     smoothed_commands = []
     for direction, distance in movement_totals.items():
         # Split distance into chunks of {max_distance} or less
-        max_distance = min(room_x, room_y, room_height)/2
+        max_distance = (min(room_x, room_y, room_height)/2)-50
         while distance >= max_distance:
             smoothed_commands.append((direction, max_distance))
             distance -= max_distance
