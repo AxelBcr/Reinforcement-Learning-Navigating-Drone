@@ -37,7 +37,7 @@ class DroneVirtual:
         # Action space: (direction, distance)
         self.action_space = spaces.Tuple((
             spaces.Discrete(6),  # 6 directions
-            spaces.Discrete(50)  # Distance from 0 to 50 cm
+            spaces.Discrete(50, start=20)  # Distance from 20 to 50 cm
         ))
         self.viewer = drone.viewer
         self.state = None
@@ -70,10 +70,10 @@ class DroneVirtual:
         `action` is a tuple (direction, distance).
         """
         direction, distance = action
-        distance += 1  # Convert to 1-50 cm range for movement
+        distance += 1  # Convert to 21-50 cm range for movement
 
         x, y, z = self.state
-        if direction == 0 and y + distance <= self.room_height:  # Move Up
+        if direction == 0 and y + distance <= self.room_depth:  # Move Up
             y += distance
         elif direction == 1 and y - distance >= 0:  # Move Down
             y -= distance
@@ -152,7 +152,7 @@ drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtual(drone, room, room_size=(500, 1000, 300))
 
 # Training parameters
-num_episodes = 5000
+num_episodes = 2000
 max_steps_per_episode = 500
 alpha = 0.09
 gamma = 0.98
@@ -279,7 +279,6 @@ for direction, distance in best_episode_actions:
     commands.append(command)
 
 # Extract positions from the environment
-#Just delete that and set the heading to 90 using f.write
 initial_heading = 90  # Modify based on actual logic
 
 # Save commands to a Python file
