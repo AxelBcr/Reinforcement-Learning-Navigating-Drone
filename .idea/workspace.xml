@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Modifying Input to command, x, y and z coord (x and y axis were inverted lmao)">
-      <change beforePath="$PROJECT_DIR$/.idea/dronesim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dronesim.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Invisible Wall Bug has been tackled, only need minimum step size of 20, movement smoothing, updating #comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/best_episode_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/best_episode_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -292,7 +290,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732634861106</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Invisible Wall Bug has been tackled, only need minimum step size of 20, movement smoothing, updating #comments">
+      <option name="closed" value="true" />
+      <created>1732804275880</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1732804275880</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -302,12 +308,13 @@
     <MESSAGE value="Q-Learning" />
     <MESSAGE value="Modifying Input to command, x, y and z coord" />
     <MESSAGE value="Modifying Input to command, x, y and z coord (x and y axis were inverted lmao)" />
-    <option name="LAST_COMMIT_MESSAGE" value="Modifying Input to command, x, y and z coord (x and y axis were inverted lmao)" />
+    <MESSAGE value="Invisible Wall Bug has been tackled, only need minimum step size of 20, movement smoothing, updating #comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Invisible Wall Bug has been tackled, only need minimum step size of 20, movement smoothing, updating #comments" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1732803809842" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1732807171784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$dronecmds.coverage" NAME="dronecmds Coverage Results" MODIFIED="1732530275293" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$test06.coverage" NAME="test06 Coverage Results" MODIFIED="1732115113124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tests" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1732803772828" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1732807951934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

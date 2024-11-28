@@ -70,7 +70,7 @@ class DroneVirtual:
         `action` is a tuple (direction, distance).
         """
         direction, distance = action
-        distance += 1  # Convert to 21-50 cm range for movement
+        distance = max(distance, 20)  # Convert to 20-50 cm range for movement
 
         x, y, z = self.state
         if direction == 0 and y + distance <= self.room_depth:  # Move Up
@@ -167,6 +167,36 @@ best_episode_trajectory = []
 best_episode_actions = []
 best_episode_reward = -float('inf')
 
+def smooth_commands(commands):
+    """
+    Globally combine all commands by direction, ensuring a maximum of one command per movement type,
+    and split movements greater than 300 into smaller chunks.
+    :param commands: List of tuples (direction, distance)
+    :return: Smoothed and split list of commands
+    """
+    # Dictionary to accumulate distances for each direction
+    movement_totals = {}
+
+    # Aggregate distances by direction
+    for direction, distance in commands:
+        if direction in movement_totals:
+            movement_totals[direction] += distance
+        else:
+            movement_totals[direction] = distance
+
+    # Convert the dictionary back to a list of commands
+    smoothed_commands = []
+    for direction, distance in movement_totals.items():
+        # Split distance into chunks of 300 or less
+        while distance >= 300:
+            smoothed_commands.append((direction, 300))
+            distance -= 300
+        if distance > 0:
+            smoothed_commands.append((direction, distance))
+
+    return smoothed_commands
+
+
 for episode in range(num_episodes):
     state = env_with_viewer.reset()
     total_reward = 0
@@ -178,7 +208,7 @@ for episode in range(num_episodes):
         if np.random.random() < epsilon:
             # Random exploration
             direction = np.random.choice(6)
-            distance = np.random.choice(50)  # Valid range is 0-49 for Q-table
+            distance = max(np.random.choice(50), 20)  # Valid range is 0-49 for Q-table
             action = (direction, distance)
         else:
             # Exploitation: choose the best action
@@ -284,17 +314,23 @@ initial_heading = 90  # Modify based on actual logic
 # Save commands to a Python file
 with open("best_episode_commands.py", "w") as f:
     f.write("from dronecmds import *\n\n")
+
+    f.write("    raw_commands =[\n")
+    for direction, distance in best_episode_actions:
+        command = f"{actions_to_commands[direction]}({distance + 1})"
+        f.write(f"    {command},\n")
+    f.write("    ]\n")
+
     f.write("def replay_best_episode():\n")
 
     # Save initial drone position and heading
     f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
 
     # Add movement commands
-    f.write(f"    takeOff()\n")
-    for direction, distance in best_episode_actions:
-        command = f"{actions_to_commands[direction]}({distance + 1})"
-        f.write(f"    {command}\n")
-    f.write("    land()\n")
+    #f.write(f"    takeOff()\n")
+    #for direction, distance in raw_commands:  # raw_commands contient les commandes brutes
+      #  f.write(f"{direction},{distance}\n")
+    #f.write("    land()\n")
 
     # Room setup
     room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
