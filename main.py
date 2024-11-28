@@ -162,8 +162,8 @@ drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtual(drone, room, room_size=(room_x, room_y, room_height))
 
 # Training parameters
-alpha = 0.5 #Learning rate
-gamma = 0.98 #Importance of future rewards
+alpha = 0.09 #Learning rate
+gamma = 0.995 #Importance of future rewards
 epsilon = 1.0 #Randomness rate
 epsilon_decay = 0.96 #Randomness decay rate
 epsilon_min = 0.01 #Minimum randomness rate
