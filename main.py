@@ -25,11 +25,12 @@ max_steps_per_episode = int(input("Enter the maximum number of steps per episode
 #%% DroneVirtual, Compute_Reward, Step, Reset, Target, Room
 class DroneVirtual:
     def __init__(self, drone, room, room_size=(room_x, room_y, room_height), max_steps=200):
-        #Initializing Variables
+        # Initializing Variables
         self.drone = drone
         self.room = room
         self.room_width, self.room_depth, self.room_height = room_size
-        self.target_position = self.create_target()  # Set target once here
+        self.max_distance = min(self.room_width, self.room_depth, self.room_height)-1
+        self.target_position = self.create_target()
         self.radius_detection = 50
         self.max_steps = max_steps
         self.step_count = 0
@@ -38,7 +39,7 @@ class DroneVirtual:
         self.state_bins = [
             np.linspace(0, self.room_width, 20),
             np.linspace(0, self.room_depth, 20),
-            np.linspace(0, self.room_height, 10),
+            np.linspace(0, self.room_height, 20),
         ]
         self.observation_space = spaces.Box(
             low=np.array([0, 0, 0]),
@@ -48,8 +49,9 @@ class DroneVirtual:
         # Action space: (direction, distance)
         self.action_space = spaces.Tuple((
             spaces.Discrete(6),  # 6 directions
-            spaces.Discrete(50)  # Distance from 20 to 50 cm
+            spaces.Discrete(int(self.max_distance - 20)+1)  # Steps start at `min_distance` (20)
         ))
+        # Initialize viewer
         self.viewer = drone.viewer
         self.state = None
         self.prev_distance = float('inf')
@@ -146,8 +148,8 @@ class DroneVirtual:
             reward -= 100  # Penalty for revisiting a state
         self.visited_states.add(discretized_state)
 
-        # Small penalty for each step to encourage efficiency
-        reward -= 0.1 * step_count  # Scaled penalty based on step count
+        # Penalty for each step to encourage efficiency
+        reward -= (1+(max_steps_per_episode/num_episodes)) * step_count  # Scaled penalty based on step count
 
         # Update the previous distance for the next step
         self.prev_distance = distance
@@ -156,10 +158,10 @@ class DroneVirtual:
 
 
 #%% Main code & Hyperparameters
-room_description = "(0 0, 500 0, 500 1000, 0 1000, 0 0)"
-room = createRoom(room_description, room_height)
+room_description = f"(0 0, {room_x-1} 0, {room_x-1} {room_y-1}, 0 {room_y-1}, 0 0)"
+room = createRoom(room_description, room_height-1)
 drone = createDrone("DroneVirtual", "ViewerTkMPL")
-env_with_viewer = DroneVirtual(drone, room, room_size=(room_x, room_y, room_height))
+env_with_viewer = DroneVirtual(drone, room, room_size=(room_x-1, room_y-1, room_height-1))
 
 # Training parameters
 alpha = 0.09 #Learning rate
@@ -169,7 +171,7 @@ epsilon_decay = 0.96 #Randomness decay rate
 epsilon_min = 0.01 #Minimum randomness rate
 
 #%% Initialize Q-table
-q_table = np.zeros((20, 20, 10, 6, 50))  # Adding distance dimension
+q_table = np.zeros((20, 20, 20, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
 episode_rewards = []
 best_episode_trajectory = []
 best_episode_actions = []
@@ -196,7 +198,7 @@ def smooth_commands(commands):
     smoothed_commands = []
     for direction, distance in movement_totals.items():
         # Split distance into chunks of {max_distance} or less
-        max_distance = (min(room_x, room_y, room_height)/2)-50
+        max_distance = 300
         while distance >= max_distance:
             smoothed_commands.append((direction, max_distance))
             distance -= max_distance
@@ -217,7 +219,7 @@ for episode in range(num_episodes):
         if np.random.random() < epsilon:
             # Random exploration
             direction = np.random.choice(6)
-            distance = np.random.choice(50)  # Valid range is 0-49 for Q-table
+            distance = np.random.choice(100)  # Valid range is 0-49 for Q-table
             action = (direction, distance)
         else:
             # Exploitation: choose the best action
