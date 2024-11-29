@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Small HyperParameters changes">
+    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="room_description, room and env_with_viewer of Main Code &amp; Hyperparameters (l.161) are now using the right values&#10;&#10;max_distance (l.201) has been reduced to 300 flat, thus letting the user compute bigger room sizes&#10;&#10;max_distance (l.32) have been added so it can change based on actual logic and room size&#10;&#10;Modified penalty for each step (l.152) so it scales based on num_episodes and max_step_per_episode">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/best_episode_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/best_episode_commands.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
@@ -258,7 +258,8 @@
       <workItem from="1732535397099" duration="1719000" />
       <workItem from="1732561430691" duration="4162000" />
       <workItem from="1732826004329" duration="13000" />
-      <workItem from="1732872262947" duration="5524000" />
+      <workItem from="1732872262947" duration="5649000" />
+      <workItem from="1732913772444" duration="1622000" />
     </task>
     <task id="LOCAL-00001" summary="Q-Learning">
       <option name="closed" value="true" />
@@ -316,7 +317,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732819639056</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="room_description, room and env_with_viewer of Main Code &amp; Hyperparameters (l.161) are now using the right values&#10;&#10;max_distance (l.201) has been reduced to 300 flat, thus letting the user compute bigger room sizes&#10;&#10;max_distance (l.32) have been added so it can change based on actual logic and room size&#10;&#10;Modified penalty for each step (l.152) so it scales based on num_episodes and max_step_per_episode">
+      <option name="closed" value="true" />
+      <created>1732877928202</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1732877928202</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -330,12 +339,13 @@
     <MESSAGE value="Directional Smoothing working, the user can now choose the room size, target and drone initial position, the number of episodes and max_steps per episode.&#10;#Comments have been updated&#10;A ReadMe to know how to use the programme will be soon uploaded..." />
     <MESSAGE value="Debugged max_distance var. so the drone smoothed movement are smaller and can be compute at final stage" />
     <MESSAGE value="Small HyperParameters changes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Small HyperParameters changes" />
+    <MESSAGE value="room_description, room and env_with_viewer of Main Code &amp; Hyperparameters (l.161) are now using the right values&#10;&#10;max_distance (l.201) has been reduced to 300 flat, thus letting the user compute bigger room sizes&#10;&#10;max_distance (l.32) have been added so it can change based on actual logic and room size&#10;&#10;Modified penalty for each step (l.152) so it scales based on num_episodes and max_step_per_episode" />
+    <option name="LAST_COMMIT_MESSAGE" value="room_description, room and env_with_viewer of Main Code &amp; Hyperparameters (l.161) are now using the right values&#10;&#10;max_distance (l.201) has been reduced to 300 flat, thus letting the user compute bigger room sizes&#10;&#10;max_distance (l.32) have been added so it can change based on actual logic and room size&#10;&#10;Modified penalty for each step (l.152) so it scales based on num_episodes and max_step_per_episode" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1732877363657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1732915399609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$dronecmds.coverage" NAME="dronecmds Coverage Results" MODIFIED="1732530275293" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$test06.coverage" NAME="test06 Coverage Results" MODIFIED="1732620643726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tests" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1732877685578" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1732915358064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

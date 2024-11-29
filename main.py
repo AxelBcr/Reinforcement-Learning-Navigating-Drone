@@ -177,28 +177,54 @@ best_episode_trajectory = []
 best_episode_actions = []
 best_episode_reward = -float('inf')
 
-def smooth_commands(commands):
-    """
-    Globally combine all commands by direction, ensuring an efficient movement type with fewer commmands
-    (split movements greater than {max_distance} into smaller chunks)
-    :param commands: List of tuples (direction, distance)
-    :return: Smoothed and split list of commands
-    """
-    # Dictionary to accumulate distances for each direction
-    movement_totals = {}
 
-    # Aggregate distances by direction
+def smooth_commands(commands, initial_position, room_dimensions):
+    """
+    Smooths and reorders commands based on proximity to walls.
+
+    :param commands: List of tuples (direction, distance).
+    :param initial_position: Tuple (x, y, z) representing the drone's current position.
+    :param room_dimensions: Tuple (width, depth, height) of the room.
+    :return: Smoothed and reordered list of commands.
+    """
+    # Extract room dimensions
+    room_width, room_depth, room_height = room_dimensions
+    x, y, z = initial_position
+
+    # Identify dangerous directions based on proximity
+    danger_directions = []
+    if x < 50:  # Close to the left wall
+        danger_directions.append(2)  # goLeft
+    if x > room_width - 50:  # Close to the right wall
+        danger_directions.append(3)  # goRight
+    if y < 50:  # Close to the back wall
+        danger_directions.append(1)  # backward
+    if y > room_depth - 50:  # Close to the front wall
+        danger_directions.append(0)  # forward
+    if z < 50:  # Close to the floor
+        danger_directions.append(5)  # goDown
+    if z > room_height - 50:  # Close to the ceiling
+        danger_directions.append(4)  # goUp
+
+    # Aggregate and smooth commands
+    movement_totals = {}
     for direction, distance in commands:
         if direction in movement_totals:
             movement_totals[direction] += distance
         else:
             movement_totals[direction] = distance
 
-    # Convert the dictionary back to a list of commands
+    # Order commands: safe directions first, dangerous directions last
     smoothed_commands = []
-    for direction, distance in movement_totals.items():
-        # Split distance into chunks of {max_distance} or less
-        max_distance = 300
+    if min(room_dimensions) > 500:
+        max_distance = 490
+    else:
+        max_distance = min(room_dimensions)-1 # Maximum single movement
+    safe_directions = [d for d in movement_totals if d not in danger_directions]
+    sorted_directions = safe_directions + danger_directions  # Prioritize safe movements
+
+    for direction in sorted_directions:
+        distance = movement_totals.get(direction, 0)
         while distance >= max_distance:
             smoothed_commands.append((direction, max_distance))
             distance -= max_distance
@@ -206,6 +232,7 @@ def smooth_commands(commands):
             smoothed_commands.append((direction, distance))
 
     return smoothed_commands
+
 
 #Training code
 for episode in range(num_episodes):
@@ -317,7 +344,11 @@ for direction, distance in best_episode_actions:
     command = f"{actions_to_commands[direction]}({distance + 1})"
     raw_commands.append(command)
 
-smoothed_commands = smooth_commands(best_episode_actions)
+# Smoothing raw_commands
+initial_position = (drone_x, drone_y, 80)  # Starting position
+room_dimensions = (room_x, room_y, room_height)  # Dimensions of the room
+smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
+
 
 # Extract positions from the environment
 initial_heading = 90  # Modify based on actual logic
