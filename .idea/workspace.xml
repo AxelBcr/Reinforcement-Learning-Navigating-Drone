@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="room_description, room and env_with_viewer of Main Code &amp; Hyperparameters (l.161) are now using the right values&#10;&#10;max_distance (l.201) has been reduced to 300 flat, thus letting the user compute bigger room sizes&#10;&#10;max_distance (l.32) have been added so it can change based on actual logic and room size&#10;&#10;Modified penalty for each step (l.152) so it scales based on num_episodes and max_step_per_episode">
+    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Modified Smooth_commands function to take care about commands order so the drone doesn't crash in smaller rooms (l.195)&#10;&#10;Modified the logic behind max step merging (former max was 300 flat) (l.219)">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/best_episode_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/best_episode_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,7 +83,7 @@
       <recent name="C:\Users\chauvet\PycharmProjects\dronesim\Tests" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main">
     <configuration name="dronecmds" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="dronesim" />
       <option name="ENV_FILES" value="" />
@@ -259,7 +257,8 @@
       <workItem from="1732561430691" duration="4162000" />
       <workItem from="1732826004329" duration="13000" />
       <workItem from="1732872262947" duration="5649000" />
-      <workItem from="1732913772444" duration="1622000" />
+      <workItem from="1732913772444" duration="1861000" />
+      <workItem from="1732974362900" duration="5000" />
     </task>
     <task id="LOCAL-00001" summary="Q-Learning">
       <option name="closed" value="true" />
@@ -325,7 +324,15 @@
       <option name="project" value="LOCAL" />
       <updated>1732877928202</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Modified Smooth_commands function to take care about commands order so the drone doesn't crash in smaller rooms (l.195)&#10;&#10;Modified the logic behind max step merging (former max was 300 flat) (l.219)">
+      <option name="closed" value="true" />
+      <created>1732915620255</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1732915620255</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -340,7 +347,8 @@
     <MESSAGE value="Debugged max_distance var. so the drone smoothed movement are smaller and can be compute at final stage" />
     <MESSAGE value="Small HyperParameters changes" />
     <MESSAGE value="room_description, room and env_with_viewer of Main Code &amp; Hyperparameters (l.161) are now using the right values&#10;&#10;max_distance (l.201) has been reduced to 300 flat, thus letting the user compute bigger room sizes&#10;&#10;max_distance (l.32) have been added so it can change based on actual logic and room size&#10;&#10;Modified penalty for each step (l.152) so it scales based on num_episodes and max_step_per_episode" />
-    <option name="LAST_COMMIT_MESSAGE" value="room_description, room and env_with_viewer of Main Code &amp; Hyperparameters (l.161) are now using the right values&#10;&#10;max_distance (l.201) has been reduced to 300 flat, thus letting the user compute bigger room sizes&#10;&#10;max_distance (l.32) have been added so it can change based on actual logic and room size&#10;&#10;Modified penalty for each step (l.152) so it scales based on num_episodes and max_step_per_episode" />
+    <MESSAGE value="Modified Smooth_commands function to take care about commands order so the drone doesn't crash in smaller rooms (l.195)&#10;&#10;Modified the logic behind max step merging (former max was 300 flat) (l.219)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Modified Smooth_commands function to take care about commands order so the drone doesn't crash in smaller rooms (l.195)&#10;&#10;Modified the logic behind max step merging (former max was 300 flat) (l.219)" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1732915399609" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

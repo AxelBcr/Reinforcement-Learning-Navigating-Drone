@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from gym import spaces
 from dronecmds import createRoom, createDrone, createTarget
 from mpl_toolkits.mplot3d import Axes3D
+from tqdm import tqdm
 #%% Room Settings
 room_x = int(input("Enter the depth of the room: "))
 room_y = int(input("Enter the width of the room: "))
@@ -235,7 +236,7 @@ def smooth_commands(commands, initial_position, room_dimensions):
 
 
 #Training code
-for episode in range(num_episodes):
+for episode in tqdm(range(num_episodes), desc="Training", unit="episode"):
     state = env_with_viewer.reset()
     total_reward = 0
     trajectory = []
