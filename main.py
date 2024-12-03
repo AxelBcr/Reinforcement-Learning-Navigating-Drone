@@ -37,7 +37,7 @@ max_steps_per_episode = int(input("Enter the maximum number of steps per episode
 
 #%% DroneVirtual, Compute_Reward, Step, Reset, Target, Room
 class DroneVirtual:
-    def __init__(self, drone, room, room_size=(room_x, room_y, room_height), max_steps=200):
+    def __init__(self, drone, room, room_size=(room_x, room_y, room_height), max_steps=max_steps_per_episode):
         # Initializing Variables
         self.drone = drone
         self.room = room
@@ -203,6 +203,8 @@ def smooth_commands(commands, initial_position, room_dimensions):
     # Extract room dimensions
     room_width, room_depth, room_height = room_dimensions
     x, y, z = initial_position
+    smoothed_commands = []
+    max_distance = 490
 
     # Identify dangerous directions based on proximity
     danger_directions = []
@@ -228,11 +230,6 @@ def smooth_commands(commands, initial_position, room_dimensions):
             movement_totals[direction] = distance
 
     # Order commands: safe directions first, dangerous directions last
-    smoothed_commands = []
-    if min(room_dimensions) > 500:
-        max_distance = 490
-    else:
-        max_distance = min(room_dimensions)-1 # Maximum single movement
     safe_directions = [d for d in movement_totals if d not in danger_directions]
     sorted_directions = safe_directions + danger_directions  # Prioritize safe movements
 
@@ -386,7 +383,8 @@ with open("best_episode_commands.py", "w") as f:
 
     # Smoothing raw_commands
     for direction, distance in smoothed_commands:
-        f.write(f"    {actions_to_commands[direction]}({distance + 1})\n")
+        if distance > 20: #Movement need to be at lest 20 cm
+            f.write(f"    {actions_to_commands[direction]}({distance})\n")
 
     # End of the flight
     f.write("    land()\n")
