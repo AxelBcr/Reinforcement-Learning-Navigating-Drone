@@ -1,10 +1,9 @@
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 from gym import spaces
-from dronecmds import createRoom, createDrone, createTarget
-from mpl_toolkits.mplot3d import Axes3D
+from dronecmds import createRoom, createDrone
 from tqdm import tqdm
+
 #%% Room Settings
 room_x = int(input("Enter the depth of the room: "))
 room_y = int(input("Enter the width of the room: "))
@@ -12,12 +11,25 @@ room_height = int(input("Enter the height of the room: "))
 
 #%% Target Settings
 target_x = int(input("Enter the x coordinate of the target: "))
+while target_x > room_x or target_x < 0:
+    target_x = int(input("Enter the x coordinate of the target: "))
+
 target_y = int(input("Enter the y coordinate of the target: "))
+while target_y > room_y or target_y < 0:
+    target_y = int(input("Enter the y coordinate of the target: "))
+
 target_z = int(input("Enter the z coordinate of the target: "))
+while target_z > room_height or target_z < 0:
+    target_z = int(input("Enter the z coordinate of the target: "))
 
 #%% Drone Settings
 drone_x = int(input("Enter the x coordinate of the drone: "))
+while drone_x > room_x or drone_x < 0:
+    drone_x = int(input("Enter the x coordinate of the drone: "))
+
 drone_y = int(input("Enter the y coordinate of the drone: "))
+while drone_y > room_y or drone_y < 0:
+    drone_y = int(input("Enter the y coordinate of the drone: "))
 
 #%% AI Training Settings
 num_episodes = int(input("Enter the number of episodes: "))
