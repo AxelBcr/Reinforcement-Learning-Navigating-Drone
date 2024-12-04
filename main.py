@@ -41,7 +41,7 @@ class DroneVirtual:
         # Initializing Variables
         self.drone = drone
         self.room = room
-        self.room_width, self.room_depth, self.room_height = room_size
+        self.room_depth, self.room_width, self.room_height = room_size
         self.max_distance = min(self.room_width, self.room_depth, self.room_height)-1
         self.target_position = self.create_target()
         self.radius_detection = 50
@@ -50,13 +50,13 @@ class DroneVirtual:
 
         # Discretize observation space
         self.state_bins = [
-            np.linspace(0, self.room_width, round((self.room_width**(1/2))/2)),
-            np.linspace(0, self.room_depth, round((self.room_depth**(1/2))/2)),
-            np.linspace(0, self.room_height, round((self.room_height**(1/2))/2)),
+            np.linspace(0, self.room_width, round(5 + (self.room_width ** 0.45))),
+            np.linspace(0, self.room_depth, round(5 + (self.room_depth ** 0.45))),
+            np.linspace(0, self.room_height, round(5 + (self.room_height ** 0.45))),
         ]
         self.observation_space = spaces.Box(
             low=np.array([0, 0, 0]),
-            high=np.array([self.room_width, self.room_height, self.room_height]),
+            high=np.array([self.room_depth, self.room_width, self.room_height]),
             dtype=np.float32,
         )
         # Action space: (direction, distance)
@@ -177,15 +177,15 @@ drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtual(drone, room, room_size=(room_x-1, room_y-1, room_height-1))
 
 #Rounded discretize observation states
-space_x : int = round((room_x**(1/2))/2)
-space_y : int = round((room_y**(1/2))/2)
-space_z : int = round((room_height**(1/2))/2)
+space_x : int = round(5 + (room_x ** 0.45))
+space_y : int = round(5 + (room_y ** 0.45))
+space_z : int = round(5 + (room_height ** 0.45))
 
 # Training parameters
 alpha = 0.05 #Learning rate
 gamma = 0.995 #Importance of future rewards
-epsilon = 1.0 #Randomness rate
-epsilon_decay = 0.96 #Randomness decay rate
+epsilon = 0.98 #Randomness rate
+epsilon_decay = 0.92 #Randomness decay rate
 epsilon_min = 0.01 #Minimum randomness rate
 
 #%% Initialize Q-table
@@ -198,7 +198,7 @@ best_episode_reward = -float('inf')
 
 def smooth_commands(commands, initial_position, room_dimensions):
     """
-    Smooths and reorders commands based on proximity to walls.
+    Smooths and reorders commands based on proximity to walls, with cancellation of opposing commands.
 
     :param commands: List of tuples (direction, distance).
     :param initial_position: Tuple (x, y, z) representing the drone's current position.
@@ -210,35 +210,54 @@ def smooth_commands(commands, initial_position, room_dimensions):
     smoothed_commands = []
     max_distance = 490
 
-    # Identify dangerous directions based on proximity
-    danger_directions = []
-    if x < 50:  # Close to the left wall
-        danger_directions.append(2)  # goLeft
-    if x > room_x - 50:  # Close to the right wall
-        danger_directions.append(3)  # goRight
-    if y < 50:  # Close to the back wall
-        danger_directions.append(1)  # backward
-    if y > room_y - 50:  # Close to the front wall
-        danger_directions.append(0)  # forward
-    if z < 50:  # Close to the floor
-        danger_directions.append(5)  # goDown
-    if z > room_height - 50:  # Close to the ceiling
-        danger_directions.append(4)  # goUp
+    # Opposing direction pairs (direction -> opposing direction)
+    opposing_directions = {
+        0: 1,  # forward -> backward
+        1: 0,  # backward -> forward
+        2: 3,  # goLeft -> goRight
+        3: 2,  # goRight -> goLeft
+        4: 5,  # goUp -> goDown
+        5: 4,  # goDown -> goUp
+    }
 
-    # Aggregate and smooth commands
+    # Aggregate movements by direction
     movement_totals = {}
     for direction, distance in commands:
+        direction = int(direction)  # Ensure direction is a Python int
+        distance = int(distance)    # Ensure distance is a Python int
         if direction in movement_totals:
             movement_totals[direction] += distance
         else:
             movement_totals[direction] = distance
 
-    # Order commands: safe directions first, dangerous directions last
-    safe_directions = [d for d in movement_totals if d not in danger_directions]
-    sorted_directions = safe_directions + danger_directions  # Prioritize safe movements
+    # Cancel out opposing movements with proper dominance handling
+    for direction in list(movement_totals.keys()):
+        opposing_direction = opposing_directions.get(direction)
+        if opposing_direction in movement_totals:
+            # Ensure opposing direction is present
+            if direction not in movement_totals or opposing_direction not in movement_totals:
+                continue
+            # Handle dominant movement
+            if movement_totals[direction] > movement_totals[opposing_direction]:
+                movement_totals[direction] -= movement_totals[opposing_direction]
+                del movement_totals[opposing_direction]
+            elif movement_totals[direction] < movement_totals[opposing_direction]:
+                movement_totals[opposing_direction] -= movement_totals[direction]
+                del movement_totals[direction]
+            else:
+                # If they cancel each other out completely
+                del movement_totals[direction]
+                del movement_totals[opposing_direction]
+
+    # Order commands by magnitude and proximity to walls
+    sorted_directions = sorted(
+        movement_totals.keys(),
+        key=lambda d: abs(movement_totals[d]),  # Prioritize larger movements
+        reverse=True
+    )
 
     for direction in sorted_directions:
-        distance = movement_totals.get(direction, 0)
+        distance = movement_totals[direction]
         while distance >= max_distance:
             smoothed_commands.append((direction, max_distance))
             distance -= max_distance
