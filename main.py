@@ -50,9 +50,9 @@ class DroneVirtual:
 
         # Discretize observation space
         self.state_bins = [
-            np.linspace(0, self.room_width, 20),
-            np.linspace(0, self.room_depth, 20),
-            np.linspace(0, self.room_height, 20),
+            np.linspace(0, self.room_width, round((self.room_width**(1/2))/2)),
+            np.linspace(0, self.room_depth, round((self.room_depth**(1/2))/2)),
+            np.linspace(0, self.room_height, round((self.room_height**(1/2))/2)),
         ]
         self.observation_space = spaces.Box(
             low=np.array([0, 0, 0]),
@@ -62,7 +62,7 @@ class DroneVirtual:
         # Action space: (direction, distance)
         self.action_space = spaces.Tuple((
             spaces.Discrete(6),  # 6 directions
-            spaces.Discrete(int(self.max_distance - 20)+1)  # Steps start at `min_distance` (20)
+            spaces.Discrete(self.max_distance)  # Steps
         ))
         # Initialize viewer
         self.viewer = drone.viewer
@@ -156,13 +156,13 @@ class DroneVirtual:
             reward += delta_distance * 10  # Smaller penalty for moving away
 
         # Penalty for revisiting states (to discourage oscillation)
-        discretized_state = tuple(map(int, state // 10))  # Discretize state to avoid floating-point issues (round values)
+        discretized_state = tuple(map(int, state))  # Discretize state to avoid floating-point issues (round values)
         if discretized_state in self.visited_states:
             reward -= 100  # Penalty for revisiting a state
         self.visited_states.add(discretized_state)
 
         # Penalty for each step to encourage efficiency
-        reward -= (1+(max_steps_per_episode/num_episodes)) * step_count  # Scaled penalty based on step count
+        reward -= (0.5+(max_steps_per_episode/num_episodes)) * step_count  # Scaled penalty based on step count
 
         # Update the previous distance for the next step
         self.prev_distance = distance
@@ -176,15 +176,20 @@ room = createRoom(room_description, room_height-1)
 drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtual(drone, room, room_size=(room_x-1, room_y-1, room_height-1))
 
+#Rounded discretize observation states
+space_x : int = round((room_x**(1/2))/2)
+space_y : int = round((room_y**(1/2))/2)
+space_z : int = round((room_height**(1/2))/2)
+
 # Training parameters
-alpha = 0.09 #Learning rate
+alpha = 0.05 #Learning rate
 gamma = 0.995 #Importance of future rewards
 epsilon = 1.0 #Randomness rate
 epsilon_decay = 0.96 #Randomness decay rate
 epsilon_min = 0.01 #Minimum randomness rate
 
 #%% Initialize Q-table
-q_table = np.zeros((20, 20, 20, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
+q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
 episode_rewards = []
 best_episode_trajectory = []
 best_episode_actions = []
@@ -201,7 +206,6 @@ def smooth_commands(commands, initial_position, room_dimensions):
     :return: Smoothed and reordered list of commands.
     """
     # Extract room dimensions
-    room_width, room_depth, room_height = room_dimensions
     x, y, z = initial_position
     smoothed_commands = []
     max_distance = 490
@@ -210,11 +214,11 @@ def smooth_commands(commands, initial_position, room_dimensions):
     danger_directions = []
     if x < 50:  # Close to the left wall
         danger_directions.append(2)  # goLeft
-    if x > room_width - 50:  # Close to the right wall
+    if x > room_x - 50:  # Close to the right wall
         danger_directions.append(3)  # goRight
     if y < 50:  # Close to the back wall
         danger_directions.append(1)  # backward
-    if y > room_depth - 50:  # Close to the front wall
+    if y > room_y - 50:  # Close to the front wall
         danger_directions.append(0)  # forward
     if z < 50:  # Close to the floor
         danger_directions.append(5)  # goDown
@@ -356,7 +360,7 @@ for direction, distance in best_episode_actions:
 
 # Smoothing raw_commands
 initial_position = (drone_x, drone_y, 80)  # Starting position
-room_dimensions = (room_x, room_y, room_height)  # Dimensions of the room
+room_dimensions = room_x-1, room_y-1, room_height-1 # Room dimensions
 smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
 
 
