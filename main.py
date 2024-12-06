@@ -4,40 +4,52 @@ from gym import spaces
 from dronecmds import createRoom, createDrone
 from tqdm import tqdm
 
-#%% Room Settings
-room_x = int(input("Enter the depth of the room: "))
-room_y = int(input("Enter the width of the room: "))
-room_height = int(input("Enter the height of the room: "))
+#Initialisation des paramètres
+settings = {}
 
-#%% Target Settings
-target_x = int(input("Enter the x coordinate of the target: "))
-while target_x > room_x or target_x < 0:
+def initialize_settings():
+    """
+    Initialise les paramètres de la salle, du drone, et des cibles.
+    """
+    global settings
+
+    # Saisie des paramètres de la salle, drone, et cible
+    room_x = int(input("Enter the depth of the room: "))
+    room_y = int(input("Enter the width of the room: "))
+    room_height = int(input("Enter the height of the room: "))
+
     target_x = int(input("Enter the x coordinate of the target: "))
-
-target_y = int(input("Enter the y coordinate of the target: "))
-while target_y > room_y or target_y < 0:
     target_y = int(input("Enter the y coordinate of the target: "))
-
-target_z = int(input("Enter the z coordinate of the target: "))
-while target_z > room_height or target_z < 0:
     target_z = int(input("Enter the z coordinate of the target: "))
 
-#%% Drone Settings
-drone_x = int(input("Enter the x coordinate of the drone: "))
-while drone_x > room_x or drone_x < 0:
     drone_x = int(input("Enter the x coordinate of the drone: "))
-
-drone_y = int(input("Enter the y coordinate of the drone: "))
-while drone_y > room_y or drone_y < 0:
     drone_y = int(input("Enter the y coordinate of the drone: "))
 
-#%% AI Training Settings
-num_episodes = int(input("Enter the number of episodes: "))
-max_steps_per_episode = int(input("Enter the maximum number of steps per episode: "))
+    num_episodes = int(input("Enter the number of episodes: "))
+    max_steps_per_episode = int(input("Enter the maximum number of steps per episode: "))
+
+    settings = {
+        "room_x": room_x,
+        "room_y": room_y,
+        "room_height": room_height,
+        "target_x": target_x,
+        "target_y": target_y,
+        "target_z": target_z,
+        "drone_x": drone_x,
+        "drone_y": drone_y,
+        "num_episodes": num_episodes,
+        "max_steps_per_episode": max_steps_per_episode
+    }
+
+    return settings
+
+
+# %% Initialisation
+initialize_settings()
 
 #%% DroneVirtual, Compute_Reward, Step, Reset, Target, Room
 class DroneVirtual:
-    def __init__(self, drone, room, room_size=(room_x, room_y, room_height), max_steps=max_steps_per_episode):
+    def __init__(self, drone, room, room_size=(settings["room_x"], settings["room_y"], settings["room_height"]), max_steps= settings["max_steps_per_episode"]):
         # Initializing Variables
         self.drone = drone
         self.room = room
@@ -83,14 +95,14 @@ class DroneVirtual:
         """
         Create a target within the room using user's inputs.
         """
-        return np.array([target_x, target_y, target_z])
+        return np.array([settings["target_x"], settings["target_y"], settings["target_z"]])
 
     def reset(self):
         """
         Reset the drone to a fixed position. Target remains fixed.
         """
         # Fixed drone initial position
-        self.state = np.array([drone_x, drone_y, 80])  # takeOff() initial position is at 80
+        self.state = np.array([settings["drone_x"], settings["drone_y"], 80])  # takeOff() initial position is at 80
         self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
 
         # Reset variables
@@ -162,38 +174,12 @@ class DroneVirtual:
         self.visited_states.add(discretized_state)
 
         # Penalty for each step to encourage efficiency
-        reward -= (0.5+(max_steps_per_episode/num_episodes)) * step_count  # Scaled penalty based on step count
+        reward -= (0.5+(settings["max_steps_per_episode"]/settings["num_episodes"])) * step_count  # Scaled penalty based on step count
 
         # Update the previous distance for the next step
         self.prev_distance = distance
 
         return reward
-
-
-#%% Main code & Hyperparameters
-room_description = f"(0 0, {room_x-1} 0, {room_x-1} {room_y-1}, 0 {room_y-1}, 0 0)"
-room = createRoom(room_description, room_height-1)
-drone = createDrone("DroneVirtual", "ViewerTkMPL")
-env_with_viewer = DroneVirtual(drone, room, room_size=(room_x-1, room_y-1, room_height-1))
-
-#Rounded discretize observation states
-space_x : int = round(5 + (room_x ** 0.45))
-space_y : int = round(5 + (room_y ** 0.45))
-space_z : int = round(5 + (room_height ** 0.45))
-
-# Training parameters
-alpha = 0.05 #Learning rate
-gamma = 0.995 #Importance of future rewards
-epsilon = 0.98 #Randomness rate
-epsilon_decay = 0.92 #Randomness decay rate
-epsilon_min = 0.01 #Minimum randomness rate
-
-#%% Initialize Q-table
-q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
-episode_rewards = []
-best_episode_trajectory = []
-best_episode_actions = []
-best_episode_reward = -float('inf')
 
 
 def smooth_commands(commands, initial_position, room_dimensions):
@@ -268,158 +254,222 @@ def smooth_commands(commands, initial_position, room_dimensions):
 
 
 #Training code
-for episode in tqdm(range(num_episodes), desc="Training", unit="episode"):
-    state = env_with_viewer.reset()
-    total_reward = 0
-    trajectory = []
-    trajectory_actions = []
-    done = False
+def training_loop(num_episodes, max_steps_per_episode, epsilon):
+    """
+    Boucle d'entraînement pour entraîner le drone.
+    """
+    global best_episode_reward, best_episode_trajectory, best_episode_actions, trajectory, trajectory_actions
 
-    for step in range(max_steps_per_episode):
-        if np.random.random() < epsilon:
-            # Random exploration
-            direction = np.random.choice(6)
-            distance = np.random.choice(100)  # Valid range is 0-49 for Q-table
-            action = (direction, distance)
-        else:
-            # Exploitation: choose the best action
-            action = np.unravel_index(np.argmax(q_table[state]), q_table[state].shape)
+    progress_bar = tqdm(range(num_episodes), desc="Training", unit="episode")  # Single progress bar
 
-        # Perform the action and observe the result
-        next_state, reward, done, _ = env_with_viewer.step(action)
-        old_value = q_table[state][action[0]][action[1]]
-        next_max = np.max(q_table[next_state])
+    for episode in progress_bar:
+        state = env_with_viewer.reset()
+        total_reward = 0
+        trajectory = []
+        trajectory_actions = []
+        done = False
 
-        # Update Q-value
-        q_table[state][action[0]][action[1]] = old_value + alpha * (reward + gamma * next_max - old_value)
+        for step in range(max_steps_per_episode):
+            if env_with_viewer.state.shape == (3,):
+                trajectory.append(env_with_viewer.state.copy())
+            else:
+                raise ValueError("State is not 3D.")
 
-        state = next_state
-        total_reward += reward
-        trajectory.append(env_with_viewer.state)
-        trajectory_actions.append(action)
+            if np.random.random() < epsilon:
+                direction = np.random.choice(6)
+                distance = np.random.choice(100)
+                action = (direction, distance)
+            else:
+                action = np.unravel_index(np.argmax(q_table[state]), q_table[state].shape)
 
-        if done:
-            break
+            next_state, reward, done, _ = env_with_viewer.step(action)
+            old_value = q_table[state][action[0]][action[1]]
+            next_max = np.max(q_table[next_state])
+            q_table[state][action[0]][action[1]] = old_value + alpha * (reward + gamma * next_max - old_value)
 
-    # Decay epsilon
-    epsilon = max(epsilon * epsilon_decay, epsilon_min)
-    episode_rewards.append(total_reward)
+            state = next_state
+            total_reward += reward
+            trajectory_actions.append(action)
 
-    # Track the best episode
-    if total_reward > best_episode_reward:
-        best_episode_reward = total_reward
-        best_episode_trajectory = trajectory
+            if done:
+                break
+
+        if total_reward > best_episode_reward:
+            if trajectory:
+                best_episode_reward = total_reward
+                best_episode_trajectory = trajectory.copy()
+                best_episode_actions = trajectory_actions.copy()
+                print(f"New best trajectory recorded with reward: {best_episode_reward}")
+            else:
+                print("No valid trajectory recorded for this episode.")
+
+        epsilon = max(epsilon * epsilon_decay, epsilon_min)
+
+    if not best_episode_trajectory:
+        print("No trajectory exceeded the best reward. Using the last recorded trajectory as the default.")
+        best_episode_trajectory = trajectory.copy()
         best_episode_actions = trajectory_actions
 
-#%%Plot for visualization
-
-# Plot the episode rewards
-plt.figure(figsize=(10, 6))
-plt.plot(episode_rewards, label="Episode Reward")
-plt.title("Training Rewards Per Episode")
-plt.xlabel("Episode")
-plt.ylabel("Total Reward")
-plt.legend()
-plt.grid(True)
-plt.show()
+    print(f"Final Best Episode Actions: {best_episode_actions}")
+    print(f"Final Best Episode Trajectory: {best_episode_trajectory}")
 
 
-# 3D trajectory visualization for the best episode
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-
-# Convert trajectory to a NumPy array for easier slicing
-trajectory = np.array(best_episode_trajectory)
-
-# Plot the trajectory
-ax.plot(trajectory[:, 0], trajectory[:, 1], trajectory[:, 2], label="Trajectory", color='blue')
-
-# Highlight start and end points
-ax.scatter(trajectory[0, 0], trajectory[0, 1], trajectory[0, 2], color='green', label="Start Point", s=100)
-ax.scatter(trajectory[-1, 0], trajectory[-1, 1], trajectory[-1, 2], color='red', label="End Point", s=100)
-
-# Plot the target position
-target_x, target_y, target_z = env_with_viewer.target_position  # Replace with actual target position
-ax.scatter(target_x, target_y, target_z, color='blue', label="Target", s=100)  # Add marker for target
-# Annotate the target position
-ax.text(target_x, target_y, target_z, 'Target', color='blue', fontsize=12)
+def get_training_results(best_episode_actions, best_episode_trajectory):
+    """
+    Return the results of the training, including the best trajectory and actions.
+    """
+    if not best_episode_actions:
+        print("Warning: No best episode actions recorded. Returning empty list.")
+        best_episode_actions = []
+    if not best_episode_trajectory:
+        print("Warning: No best episode trajectory recorded. Returning empty list.")
+        best_episode_trajectory = []
+    return best_episode_actions, best_episode_trajectory, settings
 
 
-# Fix axis labels and limits
-ax.set_title("3D Drone Trajectory - Best Episode")
-ax.set_xlabel("X Position (cm)")
-ax.set_ylabel("Y Position (cm)")
-ax.set_zlabel("Z Position (cm)")
 
-# Ensure axis limits match the room dimensions
-ax.set_ylim([room_y, 0])
-ax.set_xlim([room_x, 0])
-ax.set_zlim([0, room_height])
+#%% Main
+if __name__ == "__main__":
 
-# Add legend
-ax.legend()
+    # Initialisation des paramètres globaux
+    best_episode_reward = -float('inf')
+    best_episode_trajectory = []
+    best_episode_actions = []
 
-# Show the plot
-plt.show()
+    # %% Main code & Hyperparameters
+    room_description = f"(0 0, {settings["room_x"]-1} 0, {settings["room_x"]-1} {settings["room_y"]-1}, 0 {settings["room_y"]-1}, 0 0)"
+    room = createRoom(room_description, settings["room_height"]-1)
+    drone = createDrone("DroneVirtual", "ViewerTkMPL")
+    env_with_viewer = DroneVirtual(drone, room, room_size=(
+    settings["room_x"] - 1, settings["room_y"] - 1, settings["room_height"] - 1))
 
-#%% Convert actions to commands
-actions_to_commands = {
-    0: "forward",
-    1: "backward",
-    2: "goLeft",
-    3: "goRight",
-    4: "goUp",
-    5: "goDown"
-}
+    # Rounded discretize observation states
+    space_x: int = round(5 + (settings["room_x"] ** 0.45))
+    space_y: int = round(5 + (settings["room_y"] ** 0.45))
+    space_z: int = round(5 + (settings["room_height"] ** 0.45))
 
-raw_commands = []
-for direction, distance in best_episode_actions:
-    command = f"{actions_to_commands[direction]}({distance + 1})"
-    raw_commands.append(command)
+    # Training parameters
+    alpha = 0.05  # Learning rate
+    gamma = 0.995  # Importance of future rewards
+    epsilon = 0.98  # Randomness rate
+    epsilon_decay = 0.92  # Randomness decay rate
+    epsilon_min = 0.01  # Minimum randomness rate
 
-# Smoothing raw_commands
-initial_position = (drone_x, drone_y, 80)  # Starting position
-room_dimensions = room_x-1, room_y-1, room_height-1 # Room dimensions
-smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
+    # %% Initialize Q-table
+    q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
+    episode_rewards = []
+
+    training_loop(settings["num_episodes"], settings["max_steps_per_episode"], epsilon)
+    get_training_results(best_episode_reward, best_episode_trajectory)
+
+    #%%Plot for visualization
+
+    # Plot the episode rewards
+    plt.figure(figsize=(10, 6))
+    plt.plot(episode_rewards, label="Episode Reward")
+    plt.title("Training Rewards Per Episode")
+    plt.xlabel("Episode")
+    plt.ylabel("Total Reward")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 
-# Extract positions from the environment
-initial_heading = 90  # Modify based on actual logic
+    # 3D trajectory visualization for the best episode
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-# Save commands to a Python file
-with open("best_episode_commands.py", "w") as f:
-    f.write("from dronecmds import *\n\n")
+    # Convert trajectory to a NumPy array for easier slicing
+    trajectory = np.array(best_episode_trajectory)
 
-    f.write("raw_commands =[\n")
+    # Plot the trajectory
+    ax.plot(trajectory[:, 0], trajectory[:, 1], trajectory[:, 2], label="Trajectory", color='blue')
+
+    # Highlight start and end points
+    ax.scatter(trajectory[0, 0], trajectory[0, 1], trajectory[0, 2], color='green', label="Start Point", s=100)
+    ax.scatter(trajectory[-1, 0], trajectory[-1, 1], trajectory[-1, 2], color='red', label="End Point", s=100)
+
+    # Plot the target position
+    target_x, target_y, target_z = env_with_viewer.target_position  # Replace with actual target position
+    ax.scatter(target_x, target_y, target_z, color='blue', label="Target", s=100)  # Add marker for target
+    # Annotate the target position
+    ax.text(target_x, target_y, target_z, 'Target', color='blue', fontsize=12)
+
+
+    # Fix axis labels and limits
+    ax.set_title("3D Drone Trajectory - Best Episode")
+    ax.set_xlabel("X Position (cm)")
+    ax.set_ylabel("Y Position (cm)")
+    ax.set_zlabel("Z Position (cm)")
+
+    # Ensure axis limits match the room dimensions
+    ax.set_ylim([settings["room_y"], 0])
+    ax.set_xlim([settings["room_x"], 0])
+    ax.set_zlim([0, settings["room_height"]])
+
+    # Add legend
+    ax.legend()
+
+    # Show the plot
+    plt.show()
+
+    #%% Convert actions to commands
+    actions_to_commands = {
+        0: "forward",
+        1: "backward",
+        2: "goLeft",
+        3: "goRight",
+        4: "goUp",
+        5: "goDown"
+    }
+
+    raw_commands = []
     for direction, distance in best_episode_actions:
         command = f"{actions_to_commands[direction]}({distance + 1})"
-        f.write(f"    #{command},\n")
-    f.write("]\n")
-
-    f.write("def replay_best_episode():\n")
-
-    # Save initial drone position and heading
-    f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
-
-    # Add movement commands
-    f.write(f"    takeOff()\n")
+        raw_commands.append(command)
 
     # Smoothing raw_commands
-    for direction, distance in smoothed_commands:
-        if distance > 20: #Movement need to be at lest 20 cm
-            f.write(f"    {actions_to_commands[direction]}({distance})\n")
+    initial_position = (settings["drone_x"], settings["drone_y"], 80)  # Starting position
+    room_dimensions = settings["room_x"], settings["room_y"], settings["room_height"] # Room dimensions
+    smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
 
-    # End of the flight
-    f.write("    land()\n")
 
-    # Room setup
-    room_description = f"(0 0, {room_x} 0, {room_x} {room_y}, 0 {room_y}, 0 0)"
-    f.write(f"createRoom('{room_description}', {room_height})\n")
+    # Extract positions from the environment
+    initial_heading = 90  # Modify based on actual logic
 
-    # Target position
-    f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
-            f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
+    # Save commands to a Python file
+    with open("best_episode_commands.py", "w") as f:
+        f.write("from dronecmds import *\n\n")
 
-    # Save drone creation
-    f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
+        f.write("raw_commands =[\n")
+        for direction, distance in best_episode_actions:
+            command = f"{actions_to_commands[direction]}({distance + 1})"
+            f.write(f"    #{command},\n")
+        f.write("]\n")
+
+        f.write("def replay_best_episode():\n")
+
+        # Save initial drone position and heading
+        f.write(f"    locate({settings["drone_x"]}, {settings["drone_y"]}, {initial_heading})\n")
+
+        # Add movement commands
+        f.write(f"    takeOff()\n")
+
+        # Smoothing raw_commands
+        for direction, distance in smoothed_commands:
+            if distance > 20: #Movement need to be at lest 20 cm
+                f.write(f"    {actions_to_commands[direction]}({distance})\n")
+
+        # End of the flight
+        f.write("    land()\n")
+
+        # Room setup
+        f.write(f"createRoom('{room_description}', {settings["room_height"]})\n")
+
+        # Target position
+        f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
+                f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
+
+        # Save drone creation
+        f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
 
