@@ -1,80 +1,11 @@
 from dronecmds import *
 
 raw_commands =[
-    #goRight(63),
-    #goUp(66),
-    #goRight(92),
-    #goUp(48),
-    #goRight(94),
-    #forward(40),
-    #goUp(14),
-    #forward(4),
-    #forward(81),
-    #goUp(63),
-    #goUp(27),
-    #goRight(80),
-    #forward(25),
-    #forward(4),
-    #forward(4),
-    #forward(4),
-    #forward(4),
-    #forward(4),
-    #forward(4),
-    #forward(4),
-    #forward(30),
-    #forward(35),
-    #goRight(38),
-    #forward(5),
-    #forward(5),
-    #forward(5),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #goUp(32),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #goUp(86),
-    #goUp(77),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #forward(6),
-    #forward(7),
-    #forward(7),
-    #forward(7),
-    #forward(7),
-    #forward(8),
-    #forward(8),
-    #forward(8),
-    #forward(8),
-    #forward(9),
-    #forward(9),
-    #forward(9),
-    #goRight(60),
-    #forward(73),
-    #goRight(14),
-    #goRight(14),
-    #goRight(17),
-    #goRight(17),
-    #backward(36),
-    #forward(11),
-    #forward(20),
-    #forward(20),
-    #goUp(3),
 ]
 def replay_best_episode():
     locate(10, 10, 90)
     takeOff()
-    goRight(479)
-    forward(478)
-    goUp(407)
     land()
 createRoom('(0 0, 499 0, 499 499, 0 499, 0 0)', 500)
-createTargetIn(489, 489, 489, 491, 491, 491)
+createTargetIn(399, 399, 399, 401, 401, 401)
 createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)

@@ -254,11 +254,26 @@ def smooth_commands(commands, initial_position, room_dimensions):
 
 
 #Training code
-def training_loop(num_episodes, max_steps_per_episode, epsilon):
+def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
     """
     Boucle d'entraînement pour entraîner le drone.
     """
     global best_episode_reward, best_episode_trajectory, best_episode_actions, trajectory, trajectory_actions
+
+    # Training parameters
+    alpha = 0.05  # Learning rate
+    gamma = 0.995  # Importance of future rewards
+    epsilon = 0.98  # Randomness rate
+    epsilon_decay = 0.92  # Randomness decay rate
+    epsilon_min = 0.01  # Minimum randomness rate
+
+    # Rounded discretize observation states
+    space_x: int = round(5 + (settings["room_x"] ** 0.45))
+    space_y: int = round(5 + (settings["room_y"] ** 0.45))
+    space_z: int = round(5 + (settings["room_height"] ** 0.45))
+
+    q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
+    best_episode_reward = -float('inf')
 
     progress_bar = tqdm(range(num_episodes), desc="Training", unit="episode")  # Single progress bar
 
@@ -310,14 +325,16 @@ def training_loop(num_episodes, max_steps_per_episode, epsilon):
         best_episode_trajectory = trajectory.copy()
         best_episode_actions = trajectory_actions
 
-    print(f"Final Best Episode Actions: {best_episode_actions}")
-    print(f"Final Best Episode Trajectory: {best_episode_trajectory}")
+    return best_episode_actions, best_episode_trajectory
 
 
-def get_training_results(best_episode_actions, best_episode_trajectory):
+def get_training_results(env_with_viewer):
     """
     Return the results of the training, including the best trajectory and actions.
     """
+
+    best_episode_actions, best_episode_trajectory = training_loop(env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"])
+
     if not best_episode_actions:
         print("Warning: No best episode actions recorded. Returning empty list.")
         best_episode_actions = []
@@ -326,6 +343,71 @@ def get_training_results(best_episode_actions, best_episode_trajectory):
         best_episode_trajectory = []
     return best_episode_actions, best_episode_trajectory, settings
 
+# Save commands to a Python file
+def writing_commands():
+
+    global best_episode_actions
+
+    #%% Convert actions to commands
+    actions_to_commands = {
+        0: "forward",
+        1: "backward",
+        2: "goLeft",
+        3: "goRight",
+        4: "goUp",
+        5: "goDown"
+    }
+
+    room_description = f"(0 0, {settings["room_x"] - 1} 0, {settings["room_x"] - 1} {settings["room_y"] - 1}, 0 {settings["room_y"] - 1}, 0 0)"
+
+    raw_commands = []
+    for direction, distance in best_episode_actions:
+        command = f"{actions_to_commands[direction]}({distance + 1})"
+        raw_commands.append(command)
+
+    # Smoothing raw_commands
+    initial_position = (settings["drone_x"], settings["drone_y"], 80)  # Starting position
+    room_dimensions = settings["room_x"], settings["room_y"], settings["room_height"] # Room dimensions
+    smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
+
+
+    # Extract positions from the environment
+    initial_heading = 90  # Modify based on actual logic
+
+    with open("best_episode_commands.py", "w") as f:
+        f.write("from dronecmds import *\n\n")
+
+        f.write("raw_commands =[\n")
+        for direction, distance in best_episode_actions:
+            command = f"{actions_to_commands[direction]}({distance + 1})"
+            f.write(f"    #{command},\n")
+        f.write("]\n")
+
+        f.write("def replay_best_episode():\n")
+
+        # Save initial drone position and heading
+        f.write(f"    locate({settings["drone_x"]}, {settings["drone_y"]}, {initial_heading})\n")
+
+        # Add movement commands
+        f.write(f"    takeOff()\n")
+
+        # Smoothing raw_commands
+        for direction, distance in smoothed_commands:
+            if distance > 20: #Movement need to be at lest 20 cm
+                f.write(f"    {actions_to_commands[direction]}({distance})\n")
+
+        # End of the flight
+        f.write("    land()\n")
+
+        # Room setup
+        f.write(f"createRoom('{room_description}', {settings["room_height"]})\n")
+
+        # Target position
+        f.write(f"createTargetIn({settings["target_x"] - 1}, {settings["target_y"] - 1}, {settings["target_z"] - 1}, "
+                f"{settings["target_x"] + 1}, {settings["target_y"] + 1}, {settings["target_z"] + 1})\n")
+
+        # Save drone creation
+        f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
 
 
 #%% Main
@@ -337,7 +419,7 @@ if __name__ == "__main__":
     best_episode_actions = []
 
     # %% Main code & Hyperparameters
-    room_description = f"(0 0, {settings["room_x"]-1} 0, {settings["room_x"]-1} {settings["room_y"]-1}, 0 {settings["room_y"]-1}, 0 0)"
+    room_description = f"(0 0, {settings["room_x"] - 1} 0, {settings["room_x"] - 1} {settings["room_y"] - 1}, 0 {settings["room_y"] - 1}, 0 0)"
     room = createRoom(room_description, settings["room_height"]-1)
     drone = createDrone("DroneVirtual", "ViewerTkMPL")
     env_with_viewer = DroneVirtual(drone, room, room_size=(
@@ -359,8 +441,8 @@ if __name__ == "__main__":
     q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
     episode_rewards = []
 
-    training_loop(settings["num_episodes"], settings["max_steps_per_episode"], epsilon)
-    get_training_results(best_episode_reward, best_episode_trajectory)
+    training_loop(env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"])
+    get_training_results(env_with_viewer)
 
     #%%Plot for visualization
 
@@ -413,63 +495,5 @@ if __name__ == "__main__":
     # Show the plot
     plt.show()
 
-    #%% Convert actions to commands
-    actions_to_commands = {
-        0: "forward",
-        1: "backward",
-        2: "goLeft",
-        3: "goRight",
-        4: "goUp",
-        5: "goDown"
-    }
-
-    raw_commands = []
-    for direction, distance in best_episode_actions:
-        command = f"{actions_to_commands[direction]}({distance + 1})"
-        raw_commands.append(command)
-
-    # Smoothing raw_commands
-    initial_position = (settings["drone_x"], settings["drone_y"], 80)  # Starting position
-    room_dimensions = settings["room_x"], settings["room_y"], settings["room_height"] # Room dimensions
-    smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
-
-
-    # Extract positions from the environment
-    initial_heading = 90  # Modify based on actual logic
-
-    # Save commands to a Python file
-    with open("best_episode_commands.py", "w") as f:
-        f.write("from dronecmds import *\n\n")
-
-        f.write("raw_commands =[\n")
-        for direction, distance in best_episode_actions:
-            command = f"{actions_to_commands[direction]}({distance + 1})"
-            f.write(f"    #{command},\n")
-        f.write("]\n")
-
-        f.write("def replay_best_episode():\n")
-
-        # Save initial drone position and heading
-        f.write(f"    locate({settings["drone_x"]}, {settings["drone_y"]}, {initial_heading})\n")
-
-        # Add movement commands
-        f.write(f"    takeOff()\n")
-
-        # Smoothing raw_commands
-        for direction, distance in smoothed_commands:
-            if distance > 20: #Movement need to be at lest 20 cm
-                f.write(f"    {actions_to_commands[direction]}({distance})\n")
-
-        # End of the flight
-        f.write("    land()\n")
-
-        # Room setup
-        f.write(f"createRoom('{room_description}', {settings["room_height"]})\n")
-
-        # Target position
-        f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
-                f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
-
-        # Save drone creation
-        f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
-
+    #Updating best_episode_commands.py
+    writing_commands()

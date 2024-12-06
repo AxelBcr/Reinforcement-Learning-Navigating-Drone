@@ -4,11 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Fixed space comprehension errors&#10;&#10;Fixed smooth_commands function, added script in it : can now cancel commands with the opposite one">
-      <change afterPath="$PROJECT_DIR$/ChangingTarget.py" afterDir="false" />
+    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Dynamic discretized states based on room dimensions&#10;&#10;Fixed smoothing error where">
+      <change beforePath="$PROJECT_DIR$/.idea/dronesim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dronesim.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ChangingTarget.py" beforeDir="false" afterPath="$PROJECT_DIR$/ChangingTarget.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HowTo" beforeDir="false" afterPath="$PROJECT_DIR$/HowTo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/best_episode_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/best_episode_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dronecmds.py" beforeDir="false" afterPath="$PROJECT_DIR$/dronecmds.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mplext.py" beforeDir="false" afterPath="$PROJECT_DIR$/mplext.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/viewermpl.py" beforeDir="false" afterPath="$PROJECT_DIR$/viewermpl.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/viewertk.py" beforeDir="false" afterPath="$PROJECT_DIR$/viewertk.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +32,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -31,12 +40,12 @@
     &quot;assignee&quot;: &quot;Warukho&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Warukho/Drone_Bouchaud_Roche_Axel.git&quot;,
-    &quot;accountId&quot;: &quot;ae7f6681-2ffb-4f7c-bf84-a792f04b2b98&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Warukho/Drone_Bouchaud_Roche_Axel.git",
+    "accountId": "e3dece6f-a27b-4b2f-9d7f-de56359bea17"
   }
-}</component>
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
 }</component>
@@ -49,7 +58,6 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Python.ChangingTarget.executor": "Run",
-    "Python.MachineLearningModel.executor": "Run",
     "Python.best_episode_commands.executor": "Run",
     "Python.dronecmds.executor": "Run",
     "Python.main.executor": "Run",
@@ -260,10 +268,8 @@
       <workItem from="1732526314390" duration="7286000" />
       <workItem from="1732605940001" duration="2534000" />
       <workItem from="1732726072237" duration="1559000" />
-      <workItem from="1733320793768" duration="2818000" />
-      <workItem from="1733323646464" duration="1597000" />
-      <workItem from="1733325362451" duration="2663000" />
-      <workItem from="1733479158622" duration="3151000" />
+      <workItem from="1733320793768" duration="2296000" />
+      <workItem from="1733484584349" duration="2305000" />
     </task>
     <task id="LOCAL-00001" summary="Q-Learning">
       <option name="closed" value="true" />
@@ -313,15 +319,7 @@
       <option name="project" value="LOCAL" />
       <updated>1733311068438</updated>
     </task>
-    <task id="LOCAL-00007" summary="Fixed space comprehension errors&#10;&#10;Fixed smooth_commands function, added script in it : can now cancel commands with the opposite one">
-      <option name="closed" value="true" />
-      <created>1733323323327</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1733323323327</updated>
-    </task>
-    <option name="localTasksCounter" value="8" />
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -333,15 +331,13 @@
     <MESSAGE value="Modifying Input to command, x, y and z coord (x and y axis were inverted lmao)" />
     <MESSAGE value="Invisible Wall Bug has been tackled, only need minimum step size of 20, movement smoothing, updating #comments" />
     <MESSAGE value="Dynamic discretized states based on room dimensions&#10;&#10;Fixed smoothing error where" />
-    <MESSAGE value="Fixed space comprehension errors&#10;&#10;Fixed smooth_commands function, added script in it : can now cancel commands with the opposite one" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed space comprehension errors&#10;&#10;Fixed smooth_commands function, added script in it : can now cancel commands with the opposite one" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dynamic discretized states based on room dimensions&#10;&#10;Fixed smoothing error where" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1733482064676" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1733486897545" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$dronecmds.coverage" NAME="dronecmds Coverage Results" MODIFIED="1732530275293" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$ChangingTarget.coverage" NAME="ChangingTarget Coverage Results" MODIFIED="1733482243526" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$test06.coverage" NAME="test06 Coverage Results" MODIFIED="1732115113124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tests" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1733482034520" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$MachineLearningModel.coverage" NAME="MachineLearningModel Coverage Results" MODIFIED="1733325894045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$ChangingTarget.coverage" NAME="ChangingTarget Coverage Results" MODIFIED="1733486877854" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1733486418356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
