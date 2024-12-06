@@ -344,7 +344,7 @@ def get_training_results(env_with_viewer):
     return best_episode_actions, best_episode_trajectory, settings
 
 # Save commands to a Python file
-def writing_commands(best_episode_actions):
+def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x, drone_y, target_x, target_y, target_z, drone_z = 80):
 
     #%% Convert actions to commands
     actions_to_commands = {
@@ -356,7 +356,7 @@ def writing_commands(best_episode_actions):
         5: "goDown"
     }
 
-    room_description = f"(0 0, {settings["room_x"] - 1} 0, {settings["room_x"] - 1} {settings["room_y"] - 1}, 0 {settings["room_y"] - 1}, 0 0)"
+    room_description = f"(0 0, {room_x - 1} 0, {room_x - 1} {room_y - 1}, 0 {room_y - 1}, 0 0)"
 
     raw_commands = []
     for direction, distance in best_episode_actions:
@@ -364,8 +364,8 @@ def writing_commands(best_episode_actions):
         raw_commands.append(command)
 
     # Smoothing raw_commands
-    initial_position = (settings["drone_x"], settings["drone_y"], 80)  # Starting position
-    room_dimensions = settings["room_x"], settings["room_y"], settings["room_height"] # Room dimensions
+    initial_position = (drone_x, drone_y, drone_z)  # Starting position
+    room_dimensions = room_x, room_y, room_height # Room dimensions
     smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
 
 
@@ -384,7 +384,7 @@ def writing_commands(best_episode_actions):
         f.write("def replay_best_episode():\n")
 
         # Save initial drone position and heading
-        f.write(f"    locate({settings["drone_x"]}, {settings["drone_y"]}, {initial_heading})\n")
+        f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
 
         # Add movement commands
         f.write(f"    takeOff()\n")
@@ -398,11 +398,11 @@ def writing_commands(best_episode_actions):
         f.write("    land()\n")
 
         # Room setup
-        f.write(f"createRoom('{room_description}', {settings["room_height"]})\n")
+        f.write(f"createRoom('{room_description}', {room_height})\n")
 
         # Target position
-        f.write(f"createTargetIn({settings["target_x"] - 1}, {settings["target_y"] - 1}, {settings["target_z"] - 1}, "
-                f"{settings["target_x"] + 1}, {settings["target_y"] + 1}, {settings["target_z"] + 1})\n")
+        f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
+                f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
 
         # Save drone creation
         f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
@@ -494,4 +494,7 @@ if __name__ == "__main__":
     plt.show()
 
     #Updating best_episode_commands.py
-    writing_commands(best_episode_actions)
+    writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],
+                     settings["drone_x"], settings["drone_y"], settings["drone_z"],
+                     settings["target_x"], settings["target_y"], settings["target_z"]
+                     )

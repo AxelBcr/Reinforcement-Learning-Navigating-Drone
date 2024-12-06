@@ -1,5 +1,7 @@
 import subprocess
-from main import *
+import sys
+from main import get_training_results, settings, writing_commands, createRoom, createDrone, DroneVirtual, np, settings, \
+    training_loop
 
 # Initialisation des paramètres globaux
 best_episode_reward = -float('inf')
@@ -26,46 +28,12 @@ epsilon_decay = 0.92  # Randomness decay rate
 epsilon_min = 0.01  # Minimum randomness rate
 
 best_episode_actions, best_episode_trajectory, settings = get_training_results(env_with_viewer)
-writing_commands(best_episode_actions)
+writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],
+                 settings["drone_x"], settings["drone_y"],
+                 settings["target_x"], settings["target_y"], settings["target_z"])
 
-def update_best_episode_commands(
-    drone_position, target_position, best_episode_actions, smoothed_commands, room_dimensions
-):
-    # %% Convert actions to commands
-    actions_to_commands = {
-        0: "forward",
-        1: "backward",
-        2: "goLeft",
-        3: "goRight",
-        4: "goUp",
-        5: "goDown"
-    }
-
-    drone_x, drone_y, initial_heading = drone_position[0], drone_position[1], 90
-    target_x, target_y, target_z = target_position
-    room_x, room_y, room_height = room_dimensions
-
-    with open("best_episode_commands.py", "w") as f:
-        f.write("from dronecmds import *\n\n")
-        f.write("raw_commands =[\n")
-        for direction, distance in best_episode_actions:
-            command = f"{actions_to_commands[direction]}({distance + 1})"
-            f.write(f"    #{command},\n")
-        f.write("]\n")
-
-        f.write("def replay_best_episode():\n")
-        f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
-        f.write(f"    takeOff()\n")
-        for direction, distance in smoothed_commands:
-            if distance > 20:
-                f.write(f"    {actions_to_commands[direction]}({distance})\n")
-        f.write("    land()\n")
-        room_description = f"(0 0, {room_x} 0, {room_x} {room_y}, 0 {room_y}, 0 0)"
-        f.write(f"createRoom('{room_description}', {room_height})\n")
-        f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
-                f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
-        f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
-
+print("Running updated best_episode_commands.py...")
+subprocess.run([sys.executable, "best_episode_commands.py"])
 
 def get_smoothed_commands(best_episode_actions):
     smoothed_commands = []
@@ -76,14 +44,9 @@ def get_smoothed_commands(best_episode_actions):
 
 
 def main():
+    from main import settings
 
-    best_episode_actions, best_episode_trajectory, settings = get_training_results(env_with_viewer)
-    print("Settings:", settings)
-    print("Best Episode Actions:", best_episode_actions)
-    print("Best Episode Trajectory:", best_episode_trajectory)
-
-    room_dimensions = (settings["room_x"], settings["room_y"], settings["room_height"])
-    last_drone_position = (settings["target_x"], settings["target_y"], settings["target_z"])
+    last_drone_position = (settings["target_x"], settings["target_y"])
 
     new_target_position = (
         int(input("Enter the x coordinate of the new target: ")),
@@ -91,10 +54,30 @@ def main():
         int(input("Enter the z coordinate of the new target: "))
     )
 
-    writing_commands(best_episode_actions)
+    settings["target_x"] = new_target_position[0]
+    settings["target_y"] = new_target_position[1]
+    settings["target_z"] = new_target_position[2]
+    settings["drone_x"] = last_drone_position[0]
+    settings["drone_y"] = last_drone_position[1]
+
+    training_loop(env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"])
+
+    best_episode_actions, best_episode_trajectory, settings = get_training_results(env_with_viewer)
+
+    writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],
+                     last_drone_position[0], last_drone_position[1],
+                     new_target_position[0], new_target_position[1], new_target_position[2])
+
+
+
+    print("Settings:", settings)
+    print("Best Episode Actions:", best_episode_actions)
+    print("Best Episode Trajectory:", best_episode_trajectory)
+
 
     print("Running updated best_episode_commands.py...")
-    subprocess.run(["python3", "best_episode_commands.py"])
+    subprocess.run([sys.executable, "best_episode_commands.py"])
+
 
 if __name__ == "__main__":
     main()
