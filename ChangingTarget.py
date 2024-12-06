@@ -1,12 +1,8 @@
 import subprocess
 from main import *
 
-writing_commands()
-
 # Initialisation des paramètres globaux
 best_episode_reward = -float('inf')
-best_episode_trajectory = []
-best_episode_actions = []
 
 # %% Main code & Hyperparameters
 room_description = f"(0 0, {settings["room_x"]-1} 0, {settings["room_x"]-1} {settings["room_y"]-1}, 0 {settings["room_y"]-1}, 0 0)"
@@ -28,6 +24,9 @@ gamma = 0.995  # Importance of future rewards
 epsilon = 0.98  # Randomness rate
 epsilon_decay = 0.92  # Randomness decay rate
 epsilon_min = 0.01  # Minimum randomness rate
+
+best_episode_actions, best_episode_trajectory, settings = get_training_results(env_with_viewer)
+writing_commands(best_episode_actions)
 
 def update_best_episode_commands(
     drone_position, target_position, best_episode_actions, smoothed_commands, room_dimensions
@@ -92,15 +91,7 @@ def main():
         int(input("Enter the z coordinate of the new target: "))
     )
 
-    smoothed_commands = get_smoothed_commands(best_episode_actions)
-
-    update_best_episode_commands(
-        last_drone_position,
-        new_target_position,
-        best_episode_actions,
-        smoothed_commands,
-        room_dimensions
-    )
+    writing_commands(best_episode_actions)
 
     print("Running updated best_episode_commands.py...")
     subprocess.run(["python3", "best_episode_commands.py"])

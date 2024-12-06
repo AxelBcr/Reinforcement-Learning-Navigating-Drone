@@ -344,9 +344,7 @@ def get_training_results(env_with_viewer):
     return best_episode_actions, best_episode_trajectory, settings
 
 # Save commands to a Python file
-def writing_commands():
-
-    global best_episode_actions
+def writing_commands(best_episode_actions):
 
     #%% Convert actions to commands
     actions_to_commands = {
@@ -496,4 +494,4 @@ if __name__ == "__main__":
     plt.show()
 
     #Updating best_episode_commands.py
-    writing_commands()
+    writing_commands(best_episode_actions)
