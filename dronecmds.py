@@ -114,12 +114,6 @@ def createDrone(droneId: str, viewerId: str, progfunc=None):
     print(f"Final Drone: {drone}, Viewer: {drone.viewer}")
     return drone
 
-def createDefineTarget(x :float, y :float, z :float) :
-
-    global target
-    target = Position(x, y, z)
-    print("Target : x={} y={} z={}".format(x, y, y))
-
 
 def createTarget() :
     """
