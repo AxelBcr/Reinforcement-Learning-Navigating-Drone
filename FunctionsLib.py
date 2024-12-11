@@ -4,9 +4,6 @@ from gym import spaces
 from dronecmds import createRoom, createDrone
 from tqdm import tqdm
 
-#Initialisation des paramètres
-settings = {}
-
 def initialize_settings():
     """
     Initialise les paramètres de la salle, du drone, et des cibles.
@@ -43,9 +40,8 @@ def initialize_settings():
 
     return settings
 
-
-# %% Initialisation
-initialize_settings()
+#%% Innit Settings
+settings = initialize_settings()
 
 #%% DroneVirtual, Compute_Reward, Step, Reset, Target, Room
 class DroneVirtual:
@@ -356,10 +352,7 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
         raw_commands.append(command)
 
     # Smoothing raw_commands
-    initial_position = (drone_x, drone_y, 80)  # Starting position
-    room_dimensions = room_x, room_y, room_height # Room dimensions
     smoothed_commands = smooth_commands(best_episode_actions)
-
 
     # Extract positions from the environment
     initial_heading = 90  # Modify based on actual logic
@@ -399,93 +392,49 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
         f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
 
 
-#%% Main
-if __name__ == "__main__":
+# Training parameters (resetting Q-table)
+def initialize_q_table():
+    space_x = round(5 + (settings["room_x"] ** 0.45))
+    space_y = round(5 + (settings["room_y"] ** 0.45))
+    space_z = round(5 + (settings["room_height"] ** 0.45))
+    return np.zeros((space_x, space_y, space_z, 6, 100))
 
-    # Initialisation des paramètres globaux
-    best_episode_reward = -float('inf')
-    best_episode_trajectory = []
-    best_episode_actions = []
+# Function to reset the environment and Q-table
+def reset_environment(new_target_position,  env_with_viewer):
+    global q_table
 
-    # %% Main code & Hyperparameters
-    room_description = f"(0 0, {settings["room_x"] - 1} 0, {settings["room_x"] - 1} {settings["room_y"] - 1}, 0 {settings["room_y"] - 1}, 0 0)"
-    room = createRoom(room_description, settings["room_height"]-1)
-    drone = createDrone("DroneVirtual", "ViewerTkMPL")
-    env_with_viewer = DroneVirtual(drone, room, room_size=(
-    settings["room_x"] - 1, settings["room_y"] - 1, settings["room_height"] - 1))
+    # Update settings for the new target
+    settings["target_x"] = new_target_position[0]
+    settings["target_y"] = new_target_position[1]
+    settings["target_z"] = new_target_position[2]
 
-    # Rounded discretize observation states
-    space_x: int = round(5 + (settings["room_x"] ** 0.45))
-    space_y: int = round(5 + (settings["room_y"] ** 0.45))
-    space_z: int = round(5 + (settings["room_height"] ** 0.45))
+    # Reset the drone's position
+    last_drone_position = (settings["drone_x"], settings["drone_y"])
+    settings["drone_x"] = last_drone_position[0]
+    settings["drone_y"] = last_drone_position[1]
 
-    # Training parameters
-    alpha = 0.05  # Learning rate
-    gamma = 0.995  # Importance of future rewards
-    epsilon = 0.98  # Randomness rate
-    epsilon_decay = 0.92  # Randomness decay rate
-    epsilon_min = 0.01  # Minimum randomness rate
+    # Reset Q-table to avoid biases
+    q_table = initialize_q_table()
 
-    # %% Initialize Q-table
-    q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
-    episode_rewards = []
-
-    training_loop(env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"])
-    get_training_results(env_with_viewer)
-
-    #%%Plot for visualization
-
-    # Plot the episode rewards
-    plt.figure(figsize=(10, 6))
-    plt.plot(episode_rewards, label="Episode Reward")
-    plt.title("Training Rewards Per Episode")
-    plt.xlabel("Episode")
-    plt.ylabel("Total Reward")
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    # Update the environment's target position
+    env_with_viewer.target_position = np.array([settings["target_x"], settings["target_y"], settings["target_z"]])
 
 
-    # 3D trajectory visualization for the best episode
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
+# %% Room creation & Hyperparameters & Commands writing
+room_description = f"(0 0, {settings["room_x"]-1} 0, {settings["room_x"]-1} {settings["room_y"]-1}, 0 {settings["room_y"]-1}, 0 0)"
+room = createRoom(room_description, settings["room_height"]-1)
+drone = createDrone("DroneVirtual", "ViewerTkMPL")
+env_with_viewer = DroneVirtual(drone, room, room_size=(
+settings["room_x"] - 1, settings["room_y"] - 1, settings["room_height"] - 1))
 
-    # Convert trajectory to a NumPy array for easier slicing
-    trajectory = np.array(best_episode_trajectory)
+# Rounded discretize observation states
+space_x: int = round(5 + (settings["room_x"] ** 0.45))
+space_y: int = round(5 + (settings["room_y"] ** 0.45))
+space_z: int = round(5 + (settings["room_height"] ** 0.45))
 
-    # Plot the trajectory
-    ax.plot(trajectory[:, 0], trajectory[:, 1], trajectory[:, 2], label="Trajectory", color='blue')
-
-    # Highlight start and end points
-    ax.scatter(trajectory[0, 0], trajectory[0, 1], trajectory[0, 2], color='green', label="Start Point", s=100)
-    ax.scatter(trajectory[-1, 0], trajectory[-1, 1], trajectory[-1, 2], color='red', label="End Point", s=100)
-
-    # Plot the target position
-    target_x, target_y, target_z = env_with_viewer.target_position  # Replace with actual target position
-    ax.scatter(target_x, target_y, target_z, color='blue', label="Target", s=100)  # Add marker for target
-    # Annotate the target position
-    ax.text(target_x, target_y, target_z, 'Target', color='blue', fontsize=12)
-
-
-    # Fix axis labels and limits
-    ax.set_title("3D Drone Trajectory - Best Episode")
-    ax.set_xlabel("X Position (cm)")
-    ax.set_ylabel("Y Position (cm)")
-    ax.set_zlabel("Z Position (cm)")
-
-    # Ensure axis limits match the room dimensions
-    ax.set_ylim([settings["room_y"], 0])
-    ax.set_xlim([settings["room_x"], 0])
-    ax.set_zlim([0, settings["room_height"]])
-
-    # Add legend
-    ax.legend()
-
-    # Show the plot
-    plt.show()
-
-    #Updating best_episode_commands.py
-    writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],
-                     settings["drone_x"], settings["drone_y"],
-                     settings["target_x"], settings["target_y"], settings["target_z"]
-                     )
+# Training parameters
+alpha = 0.05  # Learning rate
+gamma = 0.995  # Importance of future rewards
+epsilon = 0.98  # Randomness rate
+epsilon_decay = 0.92  # Randomness decay rate
+epsilon_min = 0.01  # Minimum randomness rate
