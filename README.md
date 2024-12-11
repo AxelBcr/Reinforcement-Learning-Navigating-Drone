@@ -73,7 +73,7 @@ The system is built to simulate commands for a Tello Edu drone, with features fo
 **1. Initial Training**
 
 To train the drone to find the target in the room 
-(you won't be able to modify the coords of the Target here, it is only to test on a single run):
+(you won't be able to modify the coords of the Target after the training here, it is only to test on a single run):
 
       python MainDrone.py
       
