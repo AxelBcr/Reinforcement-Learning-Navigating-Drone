@@ -231,6 +231,6 @@ Overall, this project showcased my ability to adapt and innovate while meeting t
 
 ---
 
-### Acknowledgements
+### Special Thanks
 
 Special thanks to **Pierre Chauvet** for the course framework and project guidance. The project's evolution was driven by both foundational principles and the flexibility to explore advanced concepts.
