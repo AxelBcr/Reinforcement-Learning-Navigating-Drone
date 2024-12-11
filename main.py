@@ -182,17 +182,14 @@ class DroneVirtual:
         return reward
 
 
-def smooth_commands(commands, initial_position, room_dimensions):
+def smooth_commands(commands):
     """
     Smooths and reorders commands based on proximity to walls, with cancellation of opposing commands.
 
     :param commands: List of tuples (direction, distance).
-    :param initial_position: Tuple (x, y, z) representing the drone's current position.
-    :param room_dimensions: Tuple (width, depth, height) of the room.
     :return: Smoothed and reordered list of commands.
     """
-    # Extract room dimensions
-    x, y, z = initial_position
+
     smoothed_commands = []
     max_distance = 490
 
@@ -275,9 +272,7 @@ def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
     q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
     best_episode_reward = -float('inf')
 
-    progress_bar = tqdm(range(num_episodes), desc="Training", unit="episode")  # Single progress bar
-
-    for episode in progress_bar:
+    for episode in tqdm(range(num_episodes), desc="Training", unit="episode"):
         state = env_with_viewer.reset()
         total_reward = 0
         trajectory = []
@@ -314,9 +309,6 @@ def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
                 best_episode_reward = total_reward
                 best_episode_trajectory = trajectory.copy()
                 best_episode_actions = trajectory_actions.copy()
-                print(f"New best trajectory recorded with reward: {best_episode_reward}")
-            else:
-                print("No valid trajectory recorded for this episode.")
 
         epsilon = max(epsilon * epsilon_decay, epsilon_min)
 
@@ -344,7 +336,7 @@ def get_training_results(env_with_viewer):
     return best_episode_actions, best_episode_trajectory, settings
 
 # Save commands to a Python file
-def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x, drone_y, target_x, target_y, target_z, drone_z = 80):
+def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x, drone_y, target_x, target_y, target_z):
 
     #%% Convert actions to commands
     actions_to_commands = {
@@ -360,13 +352,13 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
 
     raw_commands = []
     for direction, distance in best_episode_actions:
-        command = f"{actions_to_commands[direction]}({distance + 1})"
+        command = f"{actions_to_commands[direction]}({distance})"
         raw_commands.append(command)
 
     # Smoothing raw_commands
-    initial_position = (drone_x, drone_y, drone_z)  # Starting position
+    initial_position = (drone_x, drone_y, 80)  # Starting position
     room_dimensions = room_x, room_y, room_height # Room dimensions
-    smoothed_commands = smooth_commands(best_episode_actions, initial_position, room_dimensions)
+    smoothed_commands = smooth_commands(best_episode_actions)
 
 
     # Extract positions from the environment
@@ -377,7 +369,7 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
 
         f.write("raw_commands =[\n")
         for direction, distance in best_episode_actions:
-            command = f"{actions_to_commands[direction]}({distance + 1})"
+            command = f"{actions_to_commands[direction]}({distance})"
             f.write(f"    #{command},\n")
         f.write("]\n")
 
@@ -391,8 +383,7 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
 
         # Smoothing raw_commands
         for direction, distance in smoothed_commands:
-            if distance > 20: #Movement need to be at lest 20 cm
-                f.write(f"    {actions_to_commands[direction]}({distance})\n")
+            f.write(f"    {actions_to_commands[direction]}({distance})\n")
 
         # End of the flight
         f.write("    land()\n")
@@ -495,6 +486,6 @@ if __name__ == "__main__":
 
     #Updating best_episode_commands.py
     writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],
-                     settings["drone_x"], settings["drone_y"], settings["drone_z"],
+                     settings["drone_x"], settings["drone_y"],
                      settings["target_x"], settings["target_y"], settings["target_z"]
                      )

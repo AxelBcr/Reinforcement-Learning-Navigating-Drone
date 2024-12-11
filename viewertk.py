@@ -139,6 +139,7 @@ class ViewerTkMPL(AViewer):
         if not self.running :
             dronecmds.createTarget()
             self.target=dronecmds.target
+            self.drone.target = self.target
             self._drawFigure()
             self.canvas.draw()
 
