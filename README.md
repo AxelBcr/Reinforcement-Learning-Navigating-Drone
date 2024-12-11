@@ -17,7 +17,7 @@ The system is built to simulate commands for a Tello Edu drone, with features fo
 
 ---
 
-## Features
+# Features
 
 - **Room Simulation:** Customizable 3D room environment for drone navigation.
 - **Target Detection:** Intelligent algorithm to locate a target in the simulated room.
@@ -28,7 +28,7 @@ The system is built to simulate commands for a Tello Edu drone, with features fo
 
 ---
 
-## Architecture
+# Architecture
 
 **Reinforcement_Learning_Navigating_Drone/**
 
@@ -40,7 +40,7 @@ The system is built to simulate commands for a Tello Edu drone, with features fo
 ├── **ChangingTarget.py**              
 └── **README.md**                   
 
-### Key Modules
+## Key Modules
 
 1. **dronecmds.py**:
    Provides fundamental drone operations such as movement, positioning, and target detection.
@@ -59,7 +59,7 @@ The system is built to simulate commands for a Tello Edu drone, with features fo
 
 ---
 
-## Installation
+# Installation
 
 1. Clone this repository:
    ```bash
@@ -68,7 +68,7 @@ The system is built to simulate commands for a Tello Edu drone, with features fo
 
 ---
 
-## Usage
+# Usage
 
 **1. Initial Training**
 
@@ -91,7 +91,7 @@ To replay the optimal trajectory after training:
 
 ---
 
-## Modules Overview
+# Modules Overview
 
 **dronecmds.py**
 
@@ -136,14 +136,15 @@ Facilitates:
       Retraining the drone for the new position.
       Updating the replay commands for the new trajectory.
 
-## Acknowledgements
+# Acknowledgements
 Chauvet Pierre : Developed the dronecmds, mplext, viewermpl, viewertk modules for drone operations, and dronecore, images, Tests files.
 Bouchaud--Roche Axel : Worked on reinforcement learning and dynamic environment adaptation.
 
 ---
 
-## Contacts
-For questions or contributions, please contact:
+# Contacts
+For questions or contributions, please contact:  
+
 Chauvet Pierre :   
 [Github](https://github.com/pechauvet)   
 [Email](pierre.chauvet@uco.fr)
@@ -154,17 +155,17 @@ Bouchaud--Roche Axel :
 
 ---
 
-## Lore
+# Lore
 
 Here lays a complete and detailed explanation of the process, make sure you have some time before beginning the reading:   
 
-# Reinforcement Learning Navigating Drone Project :   
+## Reinforcement Learning Navigating Drone Project :   
 
 The **Reinforcement Learning Navigating Drone** project was developed as part of a class assignment for the "Algorithmic and Programming 1" course at IMA (Angers, France). The task was to create an algorithm to control a drone in a 3D room and locate a target. While the project was initially designed to be solved with simple loops and logic, I opted to take an advanced approach by integrating **Q-learning**, a reinforcement learning algorithm, leveraging my prior experience with Python programming.
 
 ---
 
-## Project Overview
+### Project Overview
 
 The original assignment required:
 1. Designing a straightforward exploration algorithm using basic drone commands such as `forward`, `rotateLeft`, and `goUp`.
@@ -175,14 +176,14 @@ Instead of following the conventional approach, I implemented Q-learning to enab
 
 ---
 
-## Challenges and Solutions
+### Challenges and Solutions
 
-### Compatibility Issues
+#### Compatibility Issues
 Initially, the project environment provided by Pierre Chauvet was incompatible with my setup. To address this, I utilized **ChatGPT+**, but only for debugging purposes. This tool helped me identify and resolve technical issues efficiently, allowing me to focus on algorithm development without compromising learning objectives.
 
 ---
 
-## Why Q-learning?
+### Why Q-learning?
 
 I chose Q-learning for its:
 - **Efficiency**: The drone could learn from its actions and improve its ability to locate the target.
@@ -192,7 +193,7 @@ I chose Q-learning for its:
 
 ---
 
-## Technical Highlights
+### Technical Highlights
 
 1. **Simulated Environment**:
    - Implemented a 3D coordinate system to define the room and target locations.
@@ -212,14 +213,14 @@ I chose Q-learning for its:
 
 ---
 
-## Results and Learning
+### Results and Learning
 
-### Key Outcomes
+#### Key Outcomes
 - The drone successfully navigated simulated rooms and located targets with high efficiency.
 - The algorithm proved adaptable to varying room configurations and target positions.
 - The project demonstrated the practical application of reinforcement learning, particularly in balancing exploration vs. exploitation and managing state discretization.
 
-### Reflections
+#### Reflections
 This project went beyond the original requirements and provided an opportunity to explore advanced methodologies in reinforcement learning. While the assignment's scope was introductory, integrating Q-learning allowed me to:
 - Push my technical boundaries and apply advanced methods to a real-world problem. By using Q-learning, I transformed a basic task into a meaningful exploration of reinforcement learning.
 - Reinforced the importance of persistence in overcoming technical challenges. The use of ChatGPT+ for debugging highlighted the value of leveraging tools responsibly to complement problem-solving and learning.   
@@ -230,6 +231,6 @@ Overall, this project showcased my ability to adapt and innovate while meeting t
 
 ---
 
-## Acknowledgements
+### Acknowledgements
 
 Special thanks to **Pierre Chauvet** for the course framework and project guidance. The project's evolution was driven by both foundational principles and the flexibility to explore advanced concepts.
