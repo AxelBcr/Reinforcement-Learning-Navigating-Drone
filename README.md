@@ -137,7 +137,7 @@ Facilitates:
       Updating the replay commands for the new trajectory.
 
 # Acknowledgements
-Chauvet Pierre : Developed the dronecmds, mplext, viewermpl, viewertk modules for drone operations, and dronecore, images, Tests files.
+Chauvet Pierre : Developed the dronecmds, mplext, viewermpl, viewertk modules for drone operations, and dronecore, images, Tests files.   
 Bouchaud--Roche Axel : Worked on reinforcement learning and dynamic environment adaptation.
 
 ---
