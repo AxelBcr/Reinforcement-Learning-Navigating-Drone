@@ -4,6 +4,8 @@ This project is an advanced algorithm designed to navigate a drone within a simu
 It uses a reinforcement learning approach combined with an interactive environment. 
 The system is built to simulate commands for a Tello Edu drone, with features for re-training the model to adapt to new target positions.
 
+Nb : I highly recommend to turn off any translation tool to have a better reading experience !
+
 ## Table of Contents
 
 - [Features](#features)
