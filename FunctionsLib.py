@@ -15,12 +15,26 @@ def initialize_settings():
     room_y = int(input("Enter the width of the room: "))
     room_height = int(input("Enter the height of the room: "))
 
+
     target_x = int(input("Enter the x coordinate of the target: "))
+    while target_x < 0 or target_x >= room_x:
+        target_x = int(input("Invalid x coordinate. Please enter a value between 0 and the depth of the room: "))
+
     target_y = int(input("Enter the y coordinate of the target: "))
+    while target_y < 0 or target_y >= room_y:
+        target_y = int(input("Invalid y coordinate. Please enter a value between 0 and the width of the room: "))
+
     target_z = int(input("Enter the z coordinate of the target: "))
+    while target_z < 0 or target_z >= room_height:
+        target_z = int(input("Invalid z coordinate. Please enter a value between 0 and the height of the room: "))
 
     drone_x = int(input("Enter the x coordinate of the drone: "))
+    while drone_x < 0 or drone_x >= room_x:
+        drone_x = int(input("Invalid x coordinate. Please enter a value between 0 and the depth of the room: "))
+
     drone_y = int(input("Enter the y coordinate of the drone: "))
+    while drone_y < 0 or drone_y >= room_y:
+        drone_y = int(input("Invalid y coordinate. Please enter a value between 0 and the width of the room: "))
 
     num_episodes = int(input("Enter the number of episodes: "))
     max_steps_per_episode = int(input("Enter the maximum number of steps per episode: "))
