@@ -112,8 +112,7 @@ Utilities for training, environment setup, and command smoothing:
       DroneVirtual: Simulates the drone’s behavior in the room.
       training_loop(env_with_viewer, num_episodes, max_steps_per_episode): Conducts the reinforcement learning loop.
       get_training_results(env_with_viewer): Fetches the best trajectory and commands.
-      smooth_commands(commands): Optimizes command sequences for efficiency.
-      MainDrone.py
+      smooth_commands(commands): Optimizes command sequences for efficiency.   
       
 **The MainDrone execution script for:**
 
@@ -138,6 +137,7 @@ Facilitates:
 
 # Acknowledgements
 Chauvet Pierre : Developed the dronecmds, mplext, viewermpl, viewertk modules for drone operations, and dronecore, images, Tests files.   
+
 Bouchaud--Roche Axel : Worked on reinforcement learning and dynamic environment adaptation.
 
 ---
@@ -147,11 +147,11 @@ For questions or contributions, please contact:
 
 Chauvet Pierre :   
 [Github](https://github.com/pechauvet)   
-[Email](pierre.chauvet@uco.fr)
+[Email](pierre.chauvet@uco.fr) : pierre.chauvet@uco.fr
 
 Bouchaud--Roche Axel :   
 [Github](https://github.com/Warukho)   
-[Email](axelbouchaudroche@gmail.com)
+[Email](axelbouchaudroche@gmail.com) : axelbouchaudroche@gmail.com
 
 ---
 
@@ -168,7 +168,7 @@ The **Reinforcement Learning Navigating Drone** project was developed as part of
 ### Project Overview
 
 The original assignment required:
-1. Designing a straightforward exploration algorithm using basic drone commands such as `forward`, `rotateLeft`, and `goUp`.
+1. Designing a straightforward exploration algorithm using basic drone commands such as `forward`, `rotateLeft`, and `goUp` and loops.   
 2. Implementing and testing the algorithm in Python within a simulated environment.
 3. Creating a generalized version of the algorithm to adapt to rooms of varying sizes.
 
@@ -189,7 +189,7 @@ I chose Q-learning for its:
 - **Efficiency**: The drone could learn from its actions and improve its ability to locate the target.
 - **Scalability**: The algorithm generalized well to different room sizes and layouts without requiring additional hardcoding.
 - **Advanced Learning**: This approach offered an opportunity to deepen my understanding of reinforcement learning while exceeding the assignment’s expectations.
-- **Improving My Knowledge**: Lerning how to use Q-learning was a whole journey through using new Python's libs, mathematical concepts.
+- **Improving My Knowledge**: Lerning how to use Q-learning was a whole journey through using new Python's libs and Mathematical concepts.
 
 ---
 
@@ -201,11 +201,11 @@ I chose Q-learning for its:
 
 2. **State and Action Representation**:
    - **States**: Represented as the drone's position in the room (x, y, z).
-   - **Actions**: Included movement commands like forward, rotate, and ascend.
+   - **Actions**: Included movement commands like forward, rotate, and goUp.
 
 3. **Reward System**:
    - Positive rewards for reducing the distance to the target.
-   - High rewards for detecting the target (within 50 cm).
+   - High rewards for detecting the target (within 5 cm in this code).
    - Penalties for inefficiency, such as revisiting previous states.
 
 4. **Dynamic Adaptation**:
