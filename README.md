@@ -149,11 +149,11 @@ For questions or contributions, please contact:
 
 Chauvet Pierre :   
 [Github](https://github.com/pechauvet)   
-[Email](pierre.chauvet@uco.fr) : pierre.chauvet@uco.fr
+Email : pierre.chauvet@uco.fr
 
 Bouchaud--Roche Axel :   
 [Github](https://github.com/Warukho)   
-[Email](axelbouchaudroche@gmail.com) : axelbouchaudroche@gmail.com
+Email : axelbouchaudroche@gmail.com
 
 ---
 
