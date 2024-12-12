@@ -1,12 +1,36 @@
-Just run main.py : 
-  choose the room size (room_x, room_y, room_height), 
-  target position (target_x, target_y, target_z), 
-  drone position (drone_x, drone_y), 
-  the number of episodes the AI should train,
-  the max number of steps it can do during an episode
+For a single run :
 
-You will then see some plots (3D visu. of the trajectory, rewards graph) appear
+  Just run main.py : 
+    choose the room size (room_x, room_y, room_height), 
+    target position (target_x, target_y, target_z), 
+    drone position (drone_x, drone_y), 
+    the number of episodes the AI should train,
+    the max number of steps it can do during an episode
+  
+  You will then see some plots (3D visu. of the trajectory, rewards graph) appear
+  
+  Now just go to best_episode_commands.py, excecute it, start the simulation in the new window that appeared
+  
+  Good job, you've done it, have fun with this code !
 
-Now just go to best_episode_commands.py, excecute it, start the simulation in the new window that appeared
+________________________________________________________________________________________________________________
 
-Good job, you've done it, have fun with this code !
+
+For multiple runs with the ability to change target's coordinates:
+
+    Run ChangingTarget.py :
+      choose the room size (room_x, room_y, room_height), 
+      target position (target_x, target_y, target_z), 
+      drone position (drone_x, drone_y), 
+      the number of episodes the AI should train,
+      the max number of steps it can do during an episode
+
+    A subprocess running the simulation will start :
+      You can play the best_episode in this simulation
+
+    Close the simulation when finished
+    Then choose new coordinates for the target in the Python Command Prompt
+    This will launch the simulation subprocess again with the new coordinates of the Target and last coordinates of the Drone
+    You can now play the new best_episode for the new coordinates
+
+    Close the process and choose if you want to rerun the training or not (y/n)
