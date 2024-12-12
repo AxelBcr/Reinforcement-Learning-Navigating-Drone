@@ -152,7 +152,7 @@ Chauvet Pierre :
 Email : pierre.chauvet@uco.fr
 
 Bouchaud--Roche Axel :   
-[Github](https://github.com/Warukho)   
+[Github](https://github.com/AxelBcr)   
 Email : axelbouchaudroche@gmail.com
 
 ---
