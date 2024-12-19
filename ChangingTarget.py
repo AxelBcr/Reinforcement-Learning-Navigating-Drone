@@ -1,7 +1,7 @@
 import subprocess
 import sys
 from FunctionsLib import *
-from MainDrone import get_training_results, writing_commands, training_loop
+from dronecmds import target
 
 q_table = initialize_q_table()
 
@@ -14,27 +14,16 @@ writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], s
 print("Running updated best_episode_commands.py...")
 subprocess.run([sys.executable, "best_episode_commands.py"])
 
-
 def main():
-    from MainDrone import settings
-    encore = "y"
+    from FunctionsLib import settings
 
-    while encore == "y":
+    while subprocess.Popen([sys.executable, "best_episode_commands.py"]):
         #Gets  the last drone position
         last_drone_position = (settings["target_x"], settings["target_y"])
-
-        #Asks for the new target position
-        new_target_position = (
-            int(input("Enter the x coordinate of the new target: ")),
-            int(input("Enter the y coordinate of the new target: ")),
-            int(input("Enter the z coordinate of the new target: "))
-        )
-
-
+        print(target)
         #Updates the settings
-        settings["target_x"] = new_target_position[0]
-        settings["target_y"] = new_target_position[1]
-        settings["target_z"] = new_target_position[2]
+        new_target_position = target
+
         settings["drone_x"] = last_drone_position[0]
         settings["drone_y"] = last_drone_position[1]
 
@@ -52,7 +41,7 @@ def main():
 
 
         print("Running updated best_episode_commands.py...")
-        subprocess.run([sys.executable, "best_episode_commands.py"])
+        subprocess.Popen([sys.executable, "best_episode_commands.py"])
 
         encore = str(input("Do you want to continue? (y/n) : "))
 
