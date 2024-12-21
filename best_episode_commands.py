@@ -1,23 +1,128 @@
 from dronecmds import *
 
 raw_commands =[
-    #goLeft(29),
-    #goLeft(28),
-    #backward(66),
-    #backward(47),
-    #goLeft(36),
-    #backward(15),
+    #backward(60),
+    #goLeft(98),
+    #backward(92),
+    #goLeft(73),
+    #backward(88),
+    #goLeft(99),
+    #goLeft(48),
+    #backward(96),
+    #backward(95),
+    #goLeft(73),
+    #goLeft(73),
+    #backward(77),
+    #backward(54),
+    #backward(54),
+    #backward(92),
+    #backward(87),
+    #backward(87),
     #goLeft(51),
-    #backward(1),
-    #backward(1),
-    #backward(99),
+    #goLeft(86),
+    #backward(57),
+    #goLeft(70),
+    #goLeft(70),
+    #backward(35),
+    #backward(35),
+    #goUp(80),
+    #goUp(69),
+    #goLeft(99),
+    #backward(87),
+    #backward(87),
+    #backward(64),
+    #backward(39),
+    #backward(39),
+    #backward(68),
+    #backward(68),
+    #goUp(86),
+    #backward(64),
+    #goLeft(54),
+    #goLeft(54),
+    #goLeft(42),
+    #goLeft(42),
+    #goLeft(43),
+    #goLeft(26),
+    #backward(63),
+    #backward(63),
+    #backward(28),
+    #backward(28),
+    #goLeft(90),
+    #goLeft(90),
+    #forward(43),
+    #goLeft(38),
+    #backward(80),
+    #backward(38),
+    #backward(38),
+    #backward(63),
+    #backward(63),
+    #backward(67),
+    #backward(60),
+    #backward(60),
+    #goLeft(98),
+    #backward(68),
+    #goLeft(80),
+    #goLeft(80),
+    #goLeft(68),
+    #backward(77),
+    #backward(77),
+    #goLeft(96),
+    #backward(49),
+    #backward(52),
+    #backward(52),
+    #goUp(96),
+    #backward(59),
+    #backward(59),
+    #goLeft(97),
+    #backward(78),
+    #backward(44),
+    #backward(44),
+    #backward(44),
+    #backward(14),
+    #backward(14),
+    #backward(14),
+    #backward(14),
+    #backward(14),
+    #backward(64),
+    #backward(64),
+    #goLeft(96),
+    #backward(60),
+    #backward(60),
+    #backward(64),
+    #goLeft(13),
+    #goLeft(13),
+    #goLeft(13),
+    #backward(93),
+    #forward(69),
+    #goLeft(13),
+    #goLeft(13),
+    #goLeft(13),
+    #goLeft(79),
+    #goLeft(79),
+    #goRight(86),
+    #goLeft(79),
+    #goLeft(46),
+    #goRight(65),
+    #goUp(96),
+    #goDown(90),
 ]
 def replay_best_episode():
-    locate(490, 490, 90)
+    locate(4500, 4500, 90)
     takeOff()
-    backward(229)
-    goLeft(144)
+    backward(490)
+    backward(490)
+    backward(490)
+    backward(490)
+    backward(490)
+    backward(490)
+    backward(302)
+    goLeft(490)
+    goLeft(490)
+    goLeft(490)
+    goLeft(490)
+    goLeft(184)
+    goUp(337)
     land()
-createRoom('(0 0, 499 0, 499 499, 0 499, 0 0)', 500)
-createTargetIn(9, 9, 9, 11, 11, 11)
+createRoom('(0 0, 4999 0, 4999 4999, 0 4999, 0 0)', 5000)
+createTargetIn(2355, 1256, 418, 2357, 1258, 420)
 createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)

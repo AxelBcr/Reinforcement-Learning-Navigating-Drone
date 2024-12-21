@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Trying to fix ChangingTarget.py">
+    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Added coords verifications again">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ChangingTarget.py" beforeDir="false" afterPath="$PROJECT_DIR$/ChangingTarget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/best_episode_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/best_episode_commands.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,7 +84,7 @@
       <recent name="C:\Users\chauvet\PycharmProjects\dronesim\Tests" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main">
     <configuration name="dronecmds" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="dronesim" />
       <option name="ENV_FILES" value="" />
@@ -262,6 +259,7 @@
       <workItem from="1733320793768" duration="2296000" />
       <workItem from="1733484584349" duration="3235000" />
       <workItem from="1733499697802" duration="1970000" />
+      <workItem from="1734116752771" duration="21000" />
     </task>
     <task id="LOCAL-00001" summary="Q-Learning">
       <option name="closed" value="true" />
@@ -319,7 +317,15 @@
       <option name="project" value="LOCAL" />
       <updated>1733487823839</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Added coords verifications again">
+      <option name="closed" value="true" />
+      <created>1733939818476</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1733939818476</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -332,13 +338,14 @@
     <MESSAGE value="Invisible Wall Bug has been tackled, only need minimum step size of 20, movement smoothing, updating #comments" />
     <MESSAGE value="Dynamic discretized states based on room dimensions&#10;&#10;Fixed smoothing error where" />
     <MESSAGE value="Trying to fix ChangingTarget.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="Trying to fix ChangingTarget.py" />
+    <MESSAGE value="Added coords verifications again" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added coords verifications again" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1733486897545" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$dronecmds.coverage" NAME="dronecmds Coverage Results" MODIFIED="1732530275293" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$test06.coverage" NAME="test06 Coverage Results" MODIFIED="1732115113124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tests" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$ChangingTarget.coverage" NAME="ChangingTarget Coverage Results" MODIFIED="1733501661339" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$ChangingTarget.coverage" NAME="ChangingTarget Coverage Results" MODIFIED="1733939714163" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1733486418356" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

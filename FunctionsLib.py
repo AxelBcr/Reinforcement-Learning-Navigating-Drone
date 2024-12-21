@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 from gym import spaces
 from dronecmds import createRoom, createDrone
 from tqdm import tqdm

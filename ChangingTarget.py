@@ -1,7 +1,7 @@
 import subprocess
 import sys
 from FunctionsLib import *
-from MainDrone import get_training_results, writing_commands, training_loop
+from FunctionsLib import get_training_results, writing_commands, training_loop
 
 q_table = initialize_q_table()
 
@@ -16,7 +16,7 @@ subprocess.run([sys.executable, "best_episode_commands.py"])
 
 
 def main():
-    from MainDrone import settings
+    from FunctionsLib import settings
     encore = "y"
 
     while encore == "y":
