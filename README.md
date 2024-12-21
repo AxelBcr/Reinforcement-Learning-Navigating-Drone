@@ -9,7 +9,7 @@ Nb : I highly recommend to turn off any translation tool to have a better readin
 ## Table of Contents
 
 - [Features](#features)
-- [Architecture](#architecture)
+- [Main Architecture](#main-architecture)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Modules Overview](#modules-overview)
@@ -30,16 +30,16 @@ Nb : I highly recommend to turn off any translation tool to have a better readin
 
 ---
 
-# Architecture
+# Main Architecture
 
 **Reinforcement_Learning_Navigating_Drone/**
 
 │   
 ├── **dronecmds.py**                
-├── **FunctionsLib.py**             
-├── **MainDrone.py**                
+├── **FunctionsLib.py**                            
 ├── **best_episode_commands.py**           
-├── **ChangingTarget.py**              
+├── **ChangingTarget.py**    
+├── **HowTo**    
 └── **README.md**                   
 
 ## Key Modules
