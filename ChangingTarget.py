@@ -2,7 +2,6 @@ import subprocess
 import sys
 from FunctionsLib import *
 
-
 q_table = initialize_q_table()
 
 # Get the results of the training, and write it to best_episode_commands.py
