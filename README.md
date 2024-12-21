@@ -70,9 +70,9 @@ Nb : I highly recommend to turn off any translation tool to have a better readin
 
 # Usage
       
-**1. Change Target and Retrain**
+**1. Training, Changing Target and Simulation**
 
-To dynamically update the target position and retrain the model:
+To use the script, dynamically update the target position and retrain the model:
 
       python ChangingTarget.py   
 
