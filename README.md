@@ -50,13 +50,11 @@ Nb : I highly recommend to turn off any translation tool to have a better readin
 2. **FunctionsLib.py**:
    Includes the primary classes and functions for training, reward computation, and command smoothing.
 
-3. **MainDrone.py**:
-   Serves as the entry point for executing the training and generating optimal commands.
-
-4. **best_episode_commands.py**:
+3. **best_episode_commands.py**:
    Stores and replays the best episode commands after training.
 
-5. **ChangingTarget.py**:
+4. **ChangingTarget.py**:
+   Let the user use the AI
    Allows users to update the target position dynamically and retrain the model.
 
 ---
@@ -71,21 +69,14 @@ Nb : I highly recommend to turn off any translation tool to have a better readin
 ---
 
 # Usage
-
-**1. Initial Training**
-
-To train the drone to find the target in the room 
-(you won't be able to modify the coords of the Target after the training here, it is only to test on a single run):
-
-      python MainDrone.py
       
-**2. Change Target and Retrain**
+**1. Change Target and Retrain**
 
 To dynamically update the target position and retrain the model:
 
-      python ChangingTarget.py
+      python ChangingTarget.py   
 
-**3. Replay the Best Episode**
+**2. Replay the Best Episode**
 
 To replay the optimal trajectory after training:
 
@@ -115,12 +106,6 @@ Utilities for training, environment setup, and command smoothing:
       training_loop(env_with_viewer, num_episodes, max_steps_per_episode): Conducts the reinforcement learning loop.
       get_training_results(env_with_viewer): Fetches the best trajectory and commands.
       smooth_commands(commands): Optimizes command sequences for efficiency.   
-      
-**The MainDrone execution script for:**
-
-      Running the training loop.
-      Visualizing results in 3D.
-      Saving the best trajectory.
 
       
 **best_episode_commands.py**
@@ -203,7 +188,7 @@ I chose Q-learning for its:
 
 2. **State and Action Representation**:
    - **States**: Represented as the drone's position in the room (x, y, z).
-   - **Actions**: Included movement commands like forward, rotate, and goUp.
+   - **Actions**: Included movement commands.
 
 3. **Reward System**:
    - Positive rewards for reducing the distance to the target.
@@ -212,6 +197,10 @@ I chose Q-learning for its:
 
 4. **Dynamic Adaptation**:
    - Retraining the model for different room dimensions or target locations required no major code modifications.
+
+5. **Smoothing Movement**:
+   - The final trajectory of the Drone is smoothed by grouping the commands, it provides a shorter script for
+     the commands, and less visual confusion during the simulation.   
 
 ---
 
