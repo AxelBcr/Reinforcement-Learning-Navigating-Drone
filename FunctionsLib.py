@@ -3,6 +3,7 @@ from gym import spaces
 from dronecmds import createRoom, createDrone
 from tqdm import tqdm
 
+
 def initialize_settings():
     """
     Initialise les paramètres de la salle, du drone, et des cibles.
