@@ -201,18 +201,18 @@ state_bins = [
 ---
 
 <p align="center">
-  <strong>Trajectory Smoothing Algorithm</strong>
+  <strong style="font-size: 24px;">Trajectory Smoothing Algorithm</strong>
 </p>
 
 <table align="center">
   <tr>
-    <td align="center">
+    <td align="center" style="padding: 10px;">
       <strong>Without Smoothing</strong><br>
-      <img src="README_Data/Without_Smoothing.gif" width="400"/>
+      <img src="README_Data/Without_Smoothing.gif" style="max-width: 100%; width: 500px;"/>
     </td>
-    <td align="center">
+    <td align="center" style="padding: 10px;">
       <strong>With Smoothing</strong><br>
-      <img src="README_Data/With_Smoothing.gif" width="400"/>
+      <img src="README_Data/With_Smoothing.gif" style="max-width: 100%; width: 500px;"/>
     </td>
   </tr>
 </table>
@@ -226,6 +226,7 @@ state_bins = [
   - Prioritizing larger movements<br>
   - Chunking commands to respect maximum distance constraints
 </p>
+
 
 ---
 
