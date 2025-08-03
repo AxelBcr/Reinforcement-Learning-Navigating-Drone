@@ -198,13 +198,36 @@ state_bins = [
 ]
 ```
 
-**Trajectory Smoothing Algorithm**
+---
 
-Optimizes command sequences by:
-- Aggregating movements by direction
-- Canceling opposing movements
-- Prioritizing larger movements
-- Chunking commands to respect maximum distance constraints
+<p align="center">
+  <strong>Trajectory Smoothing Algorithm</strong>
+</p>
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <strong>Without Smoothing</strong><br>
+      <img src="README_Data/Without_Smoothing.gif" width="500"/>
+    </td>
+    <td align="center">
+      <strong>With Smoothing</strong><br>
+      <img src="README_Data/With_Smoothing.gif" width="500"/>
+    </td>
+  </tr>
+</table>
+
+<br>
+
+<p align="center">
+  Optimizes command sequences by:<br>
+  - Aggregating movements by direction<br>
+  - Canceling opposing movements<br>
+  - Prioritizing larger movements<br>
+  - Chunking commands to respect maximum distance constraints
+</p>
+
+---
 
 **Adaptive Exploration Strategy**
 
