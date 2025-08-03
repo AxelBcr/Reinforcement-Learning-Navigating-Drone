@@ -77,8 +77,8 @@ The Q-Learning algorithm trains the drone through multiple episodes:<br>
 <h4>Step 3: Best Episode Visualization</h4>
 <table>
    <tr>
-      <td><img src="README_Data/Simulation.gif" width="400"/></td>
-      <td><img src="README_Data/Move_around.gif" width="400"/></td>
+      <td><img src="README_Data/Simulation.gif" style="max-width: 100%; width="400"/></td>
+      <td><img src="README_Data/Move_around.gif" style="max-width: 100%; width="400"/></td>
    </tr>
 </table>
 <br><br>
@@ -94,8 +94,8 @@ After training, the simulation automatically displays:<br>
 <h4>Step 4: Dynamic Target Repositioning</h4>
 <table>
    <tr>
-      <td><img src="README_Data/Close_and_new_coord.gif" width="400"/></td>
-      <td><img src="README_Data/Second_sim.gif" width="400"/></td>
+      <td><img src="README_Data/Close_and_new_coord.gif" style="max-width: 100%; width="400"/></td>
+      <td><img src="README_Data/Second_sim.gif" style="max-width: 100%; width="400"/></td>
    </tr>
 </table>
 <br><br>
