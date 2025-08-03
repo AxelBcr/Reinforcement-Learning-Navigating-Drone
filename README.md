@@ -200,31 +200,42 @@ state_bins = [
 
 ---
 
-<p align="center">
-  <strong style="font-size: 24px;">Trajectory Smoothing Algorithm</strong>
+<strong>
+<p align="center" style="font-size: 28px; font-weight: bold; margin-bottom: 20px;">
+  Trajectory Smoothing Algorithm
 </p>
+</strong>
 
-<table align="center">
-  <tr>
-    <td align="center" style="padding: 10px;">
-      <strong>Without Smoothing</strong><br>
-      <img src="README_Data/Without_Smoothing.gif" style="max-width: 100%; width: 500px;"/>
-    </td>
-    <td align="center" style="padding: 10px;">
-      <strong>With Smoothing</strong><br>
-      <img src="README_Data/With_Smoothing.gif" style="max-width: 100%; width: 500px;"/>
-    </td>
-  </tr>
-</table>
-
+<div align="center">
+   
+<details>
+<summary>Click to see WITHOUT smoothing</summary>
 <br>
+<div align="center" style="background-color: 
+#1e1e1e; padding: 20px; border-radius: 12px; max-width: 700px; margin: auto; box-shadow: 0 0 12px rgba(0,0,0,0.4);">
+  <img src="README_Data/Without_Smoothing.gif" style="width: 100%; max-width: 600px; border-radius: 8px;">
+</div>
+<br><br>
+</details>
 
-<p align="center">
-  Optimizes command sequences by:<br>
-  - Aggregating movements by direction<br>
-  - Canceling opposing movements<br>
-  - Prioritizing larger movements<br>
-  - Chunking commands to respect maximum distance constraints
+<details>
+<summary>Click to see WITH smoothing</summary>
+<br>
+<div align="center" style="background-color: 
+#1e1e1e; padding: 20px; border-radius: 12px; max-width: 700px; margin: auto; box-shadow: 0 0 12px rgba(0,0,0,0.4);">
+  <img src="README_Data/With_Smoothing.gif" style="width: 100%; max-width: 600px; border-radius: 8px;">
+</div>
+<br><br>
+
+
+</div>
+
+<p align="center" style="font-size: 16px; max-width: 700px; margin: auto; line-height: 1.6;">
+  <strong>Optimizes command sequences by:</strong><br>
+  – Aggregating movements by direction<br>
+  – Canceling opposing movements<br>
+  – Prioritizing larger movements<br>
+  – Chunking commands to respect maximum distance constraints
 </p>
 
 
