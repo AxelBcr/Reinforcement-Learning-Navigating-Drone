@@ -1,227 +1,304 @@
-# Navigating Drone Using Reinforcement Learning
+# Reinforcement Learning Navigating Drone
 
-This project is an advanced algorithm designed to navigate a drone within a simulated room to locate a target. 
-It uses a reinforcement learning approach combined with an interactive environment. 
-The system is built to simulate commands for a Tello Edu drone, with features for re-training the model to adapt to new target positions.
+<div align="center">
 
-Nb : I highly recommend to turn off any translation tool to have a better reading experience !
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![License](https://img.shields.io/badge/License-GPL%20v3-green.svg)
+![Reinforcement Learning](https://img.shields.io/badge/RL-Q--Learning-orange.svg)
+![Status](https://img.shields.io/badge/Status-Completed-success.svg)
 
-## Table of Contents
+<h3>An intelligent drone navigation system using Q-Learning to autonomously locate targets in 3D environments</h3>
 
-- [Features](#features)
-- [Main Architecture](#main-architecture)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Modules Overview](#modules-overview)
-- [Acknowledgements](#acknowledgements)
-- [Contacts](#contacts)
-- [Entire Lore For Interested People](#lore)
+[**Features**](#features) • [**Demo**](#demo) • [**Installation**](#installation) • [**Usage**](#quick-start) • [**Documentation**](#documentation)
+
+<img src="README_Data/demo_main.gif" alt="Drone Navigation Demo" width="600">
+
+</div>
 
 ---
 
-# Features
+## Overview
 
-- **Room Simulation:** Customizable 3D room environment for drone navigation.
-- **Target Detection:** Intelligent algorithm to locate a target in the simulated room.
-- **Reinforcement Learning:** Implements Q-Learning for trajectory optimization.
-- **Visualization:** Real-time 3D trajectory plotting for training and performance monitoring.
-- **Dynamic Updates:** Allows reconfiguration of the target's location with retraining capabilities.
-- **Replay Mechanism:** Replays the best navigation trajectory using generated commands.
+This project implements an advanced **Q-Learning algorithm** to train a virtual drone for autonomous navigation in customizable 3D environments. Originally developed as an innovative solution to a university assignment, it showcases the power of reinforcement learning in robotics applications.
 
----
+For more details please read [Project Report](Dossier%20Projet%20Drone.docx)
 
-# Main Architecture
+### Key Highlights
 
-**Reinforcement_Learning_Navigating_Drone/**
+- **Reinforcement Learning**: Implements Q-Learning with customizable hyperparameters
+- **Real-time 3D Visualization**: Interactive simulation with matplotlib and tkinter
+- **Dynamic Retraining**: Adapt to new targets without restarting
+- **Optimized Trajectories**: Intelligent path smoothing for efficient navigation
+- **Performance Monitoring**: Track training progress and replay best episodes
 
-│   
-├── **dronecmds.py**                
-├── **FunctionsLib.py**                            
-├── **best_episode_commands.py**           
-├── **ChangingTarget.py**    
-├── **HowTo**    
-└── **README.md**                   
+## Features
 
-## Key Modules
+- **Room Simulation:** Customizable 3D room environment for drone navigation
+- **Target Detection:** Intelligent algorithm to locate a target in the simulated room
+- **Reinforcement Learning:** Implements Q-Learning for trajectory optimization
+- **Visualization:** Real-time 3D trajectory plotting for training and performance monitoring
+- **Dynamic Updates:** Allows reconfiguration of the target's location with retraining capabilities
+- **Replay Mechanism:** Replays the best navigation trajectory using generated commands
 
-1. **dronecmds.py**:
-   Provides fundamental drone operations such as movement, positioning, and target detection.
+## Demo
 
-2. **FunctionsLib.py**:
-   Includes the primary classes and functions for training, reward computation, and command smoothing.
+<div align="center">
+<h3>Step-by-Step Simulation Process</h3>
+</div>
 
-3. **best_episode_commands.py**:
-   Stores and replays the best episode commands after training.
-
-4. **ChangingTarget.py**:
-   Let the user use the AI
-   Allows users to update the target position dynamically and retrain the model.
-
----
-
-# Installation
-
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/Warukho/Reinforcement-Learning-Navigating-Drone.git
-   cd Reinforcement-Learning-Navigating-Drone
+<div align="center">
+<h4>Step 1: Initial Configuration</h4>
+<img src="README_Data/Entering_parameters.gif" width="600"/>
+<br><br>
+When you launch <code>ChangingTarget.py</code>, you'll be prompted to configure:<br>
+• Room dimensions (depth, width, height)<br>
+• Target position (x, y, z coordinates)<br>
+• Drone starting position<br>
+• Number of training episodes<br>
+• Maximum steps per episode
+</div>
 
 ---
 
-# Usage
-      
-**1. Training, Changing Target and Simulation**
+<div align="center">
+<h4>Step 2: Training Process</h4>
+<img src="README_Data/Training.gif" width="600"/>
+<br><br>
+The Q-Learning algorithm trains the drone through multiple episodes:<br>
+• The drone explores the environment<br>
+• Learns from successful and unsuccessful attempts<br>
+• Updates its Q-table based on rewards<br>
+• Progress bar shows training advancement
+</div>
 
-To use the script, dynamically update the target position and retrain the model:
+---
 
-      python ChangingTarget.py   
+<div align="center">
+<h4>Step 3: Best Episode Visualization</h4>
+<table>
+   <tr>
+      <td><img src="README_Data/Simulation.gif" width="400"/></td>
+      <td><img src="README_Data/Move_around.gif" width="400"/></td>
+   </tr>
+</table>
+<br><br>
+After training, the simulation automatically displays:<br>
+• The most efficient path found<br>
+• Smoothed trajectory commands<br>
+• Target detection confirmation
+</div>
 
-**2. Replay the Best Episode**
+---
+
+<div align="center">
+<h4>Step 4: Dynamic Target Repositioning</h4>
+<table>
+   <tr>
+      <td><img src="README_Data/Close_and_new_coord.gif" width="400"/></td>
+      <td><img src="README_Data/Second_sim.gif" width="400"/></td>
+   </tr>
+</table>
+<br><br>
+Without restarting the program:<br>
+• Close the simulation window<br>
+• Enter new target coordinates<br>
+• The drone starts from its last position<br>
+• Retraining adapts to the new target location
+</div>
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip package manager
+- Virtual environment (recommended)
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/Warukho/Reinforcement-Learning-Navigating-Drone.git
+cd Reinforcement-Learning-Navigating-Drone
+```
+
+2. **Create a virtual environment** (recommended)
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+### Basic Usage
+
+```bash
+# Run the main application
+python ChangingTarget.py
+```
+
+Follow the interactive prompts as shown in the demo section above.
+
+## Documentation
+
+### Project Structure
+
+```
+Reinforcement_Learning_Navigating_Drone/
+│
+├── dronecore/              # Core drone mechanics
+├── images/                 # UI assets
+├── README_Data/           # Documentation assets
+│
+├── ChangingTarget.py      # Main application entry point
+├── FunctionsLib.py        # RL algorithms & utilities
+├── dronecmds.py          # Drone command interface
+├── best_episode_commands.py  # Replay functionality
+│
+├── viewermpl.py          # Matplotlib visualizer
+├── viewertk.py           # Tkinter GUI interface
+├── mplext.py             # 3D plotting extensions
+│
+└── requirements.txt      # Project dependencies
+```
+
+### Technical Architecture
+
+#### Q-Learning Implementation
+
+The drone learns optimal navigation strategies through:
+
+- **State Space**: Discretized 3D coordinates (x, y, z)
+- **Action Space**: 6 directions × variable distances
+- **Reward System**:
+  - +1000 for reaching target
+  - Proportional rewards for reducing distance
+  - Penalties for inefficient movements
+
+```python
+# Q-table update formula
+q_table[state][action] = old_value + α * (reward + γ * max(q_table[next_state]) - old_value)
+```
+
+#### Key Components
+
+**Dynamic State Discretization**
+
+The state space automatically adapts to room dimensions:
+```python
+state_bins = [
+    np.linspace(0, room_width, round(5 + (room_width ** 0.45))),
+    np.linspace(0, room_depth, round(5 + (room_depth ** 0.45))),
+    np.linspace(0, room_height, round(5 + (room_height ** 0.45)))
+]
+```
+
+**Trajectory Smoothing Algorithm**
+
+Optimizes command sequences by:
+- Aggregating movements by direction
+- Canceling opposing movements
+- Prioritizing larger movements
+- Chunking commands to respect maximum distance constraints
+
+**Adaptive Exploration Strategy**
+
+Balances exploration vs exploitation:
+```python
+# Epsilon-greedy approach with decay
+epsilon = max(epsilon * epsilon_decay, epsilon_min)
+```
+
+### Hyperparameters
+
+| Parameter | Default Value | Description |
+|-----------|---------------|-------------|
+| Learning Rate (α) | 0.05 | Controls how quickly the drone learns |
+| Discount Factor (γ) | 0.995 | Importance of future rewards |
+| Initial Exploration (ε) | 0.98 | Initial randomness in actions |
+| Epsilon Decay | 0.92 | Rate of exploration reduction |
+| Minimum Epsilon | 0.01 | Minimum exploration rate |   
+
+## Advanced Usage
+
+### Custom Training Configuration
+
+Modify hyperparameters in `FunctionsLib.py`:
+```python
+# Training parameters
+alpha = 0.05        # Learning rate
+gamma = 0.995       # Discount factor
+epsilon = 0.98      # Initial exploration rate
+epsilon_decay = 0.92
+epsilon_min = 0.01
+```
+
+### Programmatic Control
+
+```python
+from FunctionsLib import initialize_settings, training_loop, get_training_results
+
+# Initialize environment
+settings = initialize_settings()
+
+# Run training
+best_actions, best_trajectory = training_loop(
+    env_with_viewer, 
+    num_episodes=100, 
+    max_steps=500
+)
+
+# Generate replay commands
+writing_commands(best_actions, settings["room_x"], settings["room_y"], 
+                settings["room_height"], settings["drone_x"], settings["drone_y"],
+                settings["target_x"], settings["target_y"], settings["target_z"])
+```
+
+### Replay Best Episode
 
 To replay the optimal trajectory after training:
+```bash
+python best_episode_commands.py
+```
 
-      python best_episode_commands.py
+## License
 
----
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
 
-# Modules Overview
+## Acknowledgments
 
-**dronecmds.py**
+### Development Team
 
-Core module for drone simulation commands:
-      
-      createRoom(description, height): Sets up the environment.
-      createDrone(droneId, viewerId, progfunc): Initializes the drone and its visualization.
-      locate(x, y, heading): Positions the drone.
-      takeOff(), land(): Controls the drone's flight.
-      Movement commands like forward(n), backward(n), goUp(n), goDown(n), etc.
-      isTargetDetected(): Checks if the drone detects the target.
-      
-**FunctionsLib.py**
+**Axel Bouchaud--Roche**  
+- Reinforcement Learning implementation
+- Dynamic environment adaptation
+- Q-Learning algorithm optimization
+- Email: axelbouchaudroche@gmail.com
+- GitHub: [AxelBcr](https://github.com/AxelBcr)
 
-Utilities for training, environment setup, and command smoothing:
+**Pierre Chauvet**  
+- Core framework development
+- Drone command interface
+- 3D visualization system
+- Email: pierre.chauvet@uco.fr
+- GitHub: [pechauvet](https://github.com/pechauvet)
 
-      initialize_settings(): Configures environment and training parameters.
-      DroneVirtual: Simulates the drone’s behavior in the room.
-      training_loop(env_with_viewer, num_episodes, max_steps_per_episode): Conducts the reinforcement learning loop.
-      get_training_results(env_with_viewer): Fetches the best trajectory and commands.
-      smooth_commands(commands): Optimizes command sequences for efficiency.   
-
-      
-**best_episode_commands.py**
-
-Handles:
-
-      Storing the optimal trajectory commands.
-      Replaying the trained navigation strategy.
-      ChangingTarget.py
-      
-Facilitates:
-
-      Dynamic updates to the target position.
-      Retraining the drone for the new position.
-      Updating the replay commands for the new trajectory.
-
-# Acknowledgements
-Chauvet Pierre : Developed the dronecmds, mplext, viewermpl, viewertk modules for drone operations, and dronecore, images, Tests files.   
-
-Bouchaud--Roche Axel : Worked on reinforcement learning and dynamic environment adaptation.
+**Léo Bugyan**  
+- Co-developpment
+- Writing report
+- GitHub: [zenk02](https://github.com/zenk02) 
 
 ---
 
-# Contacts
-For questions or contributions, please contact:  
+<div align="center">
 
-Chauvet Pierre :   
-[Github](https://github.com/pechauvet)   
-Email : pierre.chauvet@uco.fr
+### Project Status: Completed
 
-Bouchaud--Roche Axel :   
-[Github](https://github.com/AxelBcr)   
-Email : axelbouchaudroche@gmail.com
+This project was developed as part of a first-year university assignment and successfully demonstrates advanced reinforcement learning concepts applied to drone navigation.
 
----
-
-# Lore
-
-Here lays a complete and detailed explanation of the process, make sure you have some time before beginning the reading:   
-
-## Reinforcement Learning Navigating Drone Project :   
-
-The **Reinforcement Learning Navigating Drone** project was developed as part of a class assignment for the "Algorithmic and Programming 1" course at IMA (Angers, France). The task was to create an algorithm to control a drone in a 3D room and locate a target. While the project was initially designed to be solved with simple loops and logic, I opted to take an advanced approach by integrating **Q-learning**, a reinforcement learning algorithm, leveraging my prior experience with Python programming.
-
----
-
-### Project Overview
-
-The original assignment required:
-1. Designing a straightforward exploration algorithm using basic drone commands such as `forward`, `rotateLeft`, and `goUp` and loops.   
-2. Implementing and testing the algorithm in Python within a simulated environment.
-3. Creating a generalized version of the algorithm to adapt to rooms of varying sizes.
-
-Instead of following the conventional approach, I implemented Q-learning to enable the drone to learn optimal navigation strategies autonomously. This decision was driven by my two years of Python experience during high school, which provided the confidence to explore advanced techniques.
-
----
-
-### Challenges and Solutions
-
-#### Compatibility Issues
-Initially, the project environment provided by Pierre Chauvet was incompatible with my setup. To address this, I utilized **ChatGPT+**, but only for debugging purposes. This tool helped me identify and resolve technical issues efficiently, allowing me to focus on algorithm development without compromising learning objectives.
-
----
-
-### Why Q-learning?
-
-I chose Q-learning for its:
-- **Efficiency**: The drone could learn from its actions and improve its ability to locate the target.
-- **Scalability**: The algorithm generalized well to different room sizes and layouts without requiring additional hardcoding.
-- **Advanced Learning**: This approach offered an opportunity to deepen my understanding of reinforcement learning while exceeding the assignment’s expectations.
-- **Improving My Knowledge**: Lerning how to use Q-learning was a whole journey through using new Python's libs and Mathematical concepts.
-
----
-
-### Technical Highlights
-
-1. **Simulated Environment**:
-   - Implemented a 3D coordinate system to define the room and target locations.
-   - Utilized basic drone commands such as `takeOff`, `land`, and directional movements (`forward(n)`, `rotateLeft(n)`).
-
-2. **State and Action Representation**:
-   - **States**: Represented as the drone's position in the room (x, y, z).
-   - **Actions**: Included movement commands.
-
-3. **Reward System**:
-   - Positive rewards for reducing the distance to the target.
-   - High rewards for detecting the target (within 5 cm in this code).
-   - Penalties for inefficiency, such as revisiting previous states.
-
-4. **Dynamic Adaptation**:
-   - Retraining the model for different room dimensions or target locations required no major code modifications.
-
-5. **Smoothing Movement**:
-   - The final trajectory of the Drone is smoothed by grouping the commands, it provides a shorter script for
-     the commands, and less visual confusion during the simulation.   
-
----
-
-### Results and Learning
-
-#### Key Outcomes
-- The drone successfully navigated simulated rooms and located targets with high efficiency.
-- The algorithm proved adaptable to varying room configurations and target positions.
-- The project demonstrated the practical application of reinforcement learning, particularly in balancing exploration vs. exploitation and managing state discretization.
-
-#### Reflections
-This project went beyond the original requirements and provided an opportunity to explore advanced methodologies in reinforcement learning. While the assignment's scope was introductory, integrating Q-learning allowed me to:
-- Push my technical boundaries and apply advanced methods to a real-world problem. By using Q-learning, I transformed a basic task into a meaningful exploration of reinforcement learning.
-- Reinforced the importance of persistence in overcoming technical challenges. The use of ChatGPT+ for debugging highlighted the value of leveraging tools responsibly to complement problem-solving and learning.   
-
-Overall, this project showcased my ability to adapt and innovate while meeting the course requirements. It was an enriching journey that strengthened both my programming expertise and my understanding of machine learning principles.
-
-
-
----
-
-### Special Thanks
-
-Special thanks to **Pierre Chauvet** for the course framework and project guidance. The project's evolution was driven by both foundational principles and the flexibility to explore advanced concepts.
+</div>
