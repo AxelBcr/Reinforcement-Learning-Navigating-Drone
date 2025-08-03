@@ -48,7 +48,7 @@ For more details please read [Project Report](Dossier%20Projet%20Drone.docx)
 
 <div align="center">
 <h4>Step 1: Initial Configuration</h4>
-<img src="README_Data/Entering_parameters.gif" width="600"/>
+<img src="README_Data/Entering_parameters.gif" style="max-width: 100%; width="600"/>
 <br><br>
 When you launch <code>ChangingTarget.py</code>, you'll be prompted to configure:<br>
 • Room dimensions (depth, width, height)<br>
@@ -62,7 +62,7 @@ When you launch <code>ChangingTarget.py</code>, you'll be prompted to configure:
 
 <div align="center">
 <h4>Step 2: Training Process</h4>
-<img src="README_Data/Training.gif" width="600"/>
+<img src="README_Data/Training.gif" style="max-width: 100%; width="600"/>
 <br><br>
 The Q-Learning algorithm trains the drone through multiple episodes:<br>
 • The drone explores the environment<br>
@@ -77,8 +77,8 @@ The Q-Learning algorithm trains the drone through multiple episodes:<br>
 <h4>Step 3: Best Episode Visualization</h4>
 <table>
    <tr>
-      <td><img src="README_Data/Simulation.gif" style="max-width: 100%; width="400"/></td>
-      <td><img src="README_Data/Move_around.gif" style="max-width: 100%; width="400"/></td>
+      <td><img src="README_Data/Simulation.gif" style="max-width: 100%; width="600"/></td>
+      <td><img src="README_Data/Move_around.gif" style="max-width: 100%; width="600"/></td>
    </tr>
 </table>
 <br><br>
@@ -94,8 +94,8 @@ After training, the simulation automatically displays:<br>
 <h4>Step 4: Dynamic Target Repositioning</h4>
 <table>
    <tr>
-      <td><img src="README_Data/Close_and_new_coord.gif" style="max-width: 100%; width="400"/></td>
-      <td><img src="README_Data/Second_sim.gif" style="max-width: 100%; width="400"/></td>
+      <td><img src="README_Data/Close_and_new_coord.gif" style="max-width: 100%; width="600"/></td>
+      <td><img src="README_Data/Second_sim.gif" style="max-width: 100%; width="600"/></td>
    </tr>
 </table>
 <br><br>
