@@ -209,7 +209,7 @@ state_bins = [
 <div align="center">
    
 <details>
-<summary>Click to see WITHOUT smoothing</summary>
+<summary><strong><ins>Click</ins></strong> to see WITHOUT smoothing</summary>
 <br>
 <div align="center" style="background-color: 
 #1e1e1e; padding: 20px; border-radius: 12px; max-width: 700px; margin: auto; box-shadow: 0 0 12px rgba(0,0,0,0.4);">
@@ -219,7 +219,7 @@ state_bins = [
 </details>
 
 <details>
-<summary>Click to see WITH smoothing</summary>
+<summary><strong><ins>Click</ins></strong> to see WITH smoothing</summary>
 <br>
 <div align="center" style="background-color: 
 #1e1e1e; padding: 20px; border-radius: 12px; max-width: 700px; margin: auto; box-shadow: 0 0 12px rgba(0,0,0,0.4);">
