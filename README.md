@@ -208,11 +208,11 @@ state_bins = [
   <tr>
     <td align="center">
       <strong>Without Smoothing</strong><br>
-      <img src="README_Data/Without_Smoothing.gif" width="500"/>
+      <img src="README_Data/Without_Smoothing.gif" width="400"/>
     </td>
     <td align="center">
       <strong>With Smoothing</strong><br>
-      <img src="README_Data/With_Smoothing.gif" width="500"/>
+      <img src="README_Data/With_Smoothing.gif" width="400"/>
     </td>
   </tr>
 </table>
