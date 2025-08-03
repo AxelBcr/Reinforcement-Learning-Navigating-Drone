@@ -1,0 +1,17 @@
+# Core scientific computing
+numpy>=1.24.0,<2.0.0
+
+# Machine Learning and RL environment
+gym>=0.26.0,<1.0.0
+
+# Geometry and spatial operations
+shapely>=2.0.0,<3.0.0
+
+# Data visualization
+matplotlib>=3.6.0,<4.0.0
+
+# Image processing (for GUI icons)
+Pillow>=9.5.0,<11.0.0
+
+# Progress bars
+tqdm>=4.64.0,<5.0.0
