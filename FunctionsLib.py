@@ -358,7 +358,7 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
         5: "goDown"
     }
 
-    room_description = f"(0 0, {room_x + 1} 0, {room_x + 1} {room_y + 1}, 0 {room_y + 1}, 0 0)"
+    room_description = f"(0 0, {room_x - 1} 0, {room_x - 1} {room_y - 1}, 0 {room_y - 1}, 0 0)"
 
     raw_commands = []
     for direction, distance in best_episode_actions:
@@ -399,8 +399,15 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
         f.write(f"createRoom('{room_description}', {room_height})\n")
 
         # Target position
-        f.write(f"createTargetIn({target_x - 1}, {target_y - 1}, {target_z - 1}, "
-                f"{target_x + 1}, {target_y + 1}, {target_z + 1})\n")
+        low_x = target_x - 1 if target_x > 1 else 0
+        high_x = target_x + 1 if target_x<room_x else room_x
+        low_y = target_y - 1 if target_y > 1 else 0
+        high_y = target_y + 1 if target_y<room_y else room_y
+        low_z = target_z - 1 if target_z > 1 else 0
+        high_z = target_z + 1 if target_z<room_height else room_height
+
+        f.write(f"createTargetIn({low_x}, {low_y}, {low_z}, "
+                f"{high_x}, {high_y}, {high_z})\n")
 
         # Save drone creation
         f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
@@ -414,7 +421,7 @@ def initialize_q_table():
     return np.zeros((space_x, space_y, space_z, 6, 100))
 
 # Function to reset the environment and Q-table
-def reset_environment(new_target_position,  env_with_viewer):
+def reset_environment(new_target_position ,env_with_viewer):
     global q_table
 
     # Update settings for the new target
@@ -423,9 +430,8 @@ def reset_environment(new_target_position,  env_with_viewer):
     settings["target_z"] = new_target_position[2]
 
     # Reset the drone's position
-    last_drone_position = (settings["drone_x"], settings["drone_y"])
-    settings["drone_x"] = last_drone_position[0]
-    settings["drone_y"] = last_drone_position[1]
+    settings["drone_x"] = settings["drone_x"]
+    settings["drone_y"] = settings["drone_y"]
 
     # Reset Q-table to avoid biases
     q_table = initialize_q_table()
@@ -440,15 +446,3 @@ room = createRoom(room_description, settings["room_height"]-1)
 drone = createDrone("DroneVirtual", "ViewerTkMPL")
 env_with_viewer = DroneVirtual(drone, room, room_size=(
 settings["room_x"] - 1, settings["room_y"] - 1, settings["room_height"] - 1))
-
-# Rounded discretize observation states
-space_x: int = round(5 + (settings["room_x"] ** 0.45))
-space_y: int = round(5 + (settings["room_y"] ** 0.45))
-space_z: int = round(5 + (settings["room_height"] ** 0.45))
-
-# Training parameters
-alpha = 0.05  # Learning rate
-gamma = 0.995  # Importance of future rewards
-epsilon = 0.98  # Randomness rate
-epsilon_decay = 0.92  # Randomness decay rate
-epsilon_min = 0.01  # Minimum randomness rate

@@ -34,6 +34,7 @@ def main():
         settings["target_x"] = new_target_position[0]
         settings["target_y"] = new_target_position[1]
         settings["target_z"] = new_target_position[2]
+
         settings["drone_x"] = last_drone_position[0]
         settings["drone_y"] = last_drone_position[1]
 
@@ -53,7 +54,7 @@ def main():
         print("Running updated best_episode_commands.py...")
         subprocess.run([sys.executable, "best_episode_commands.py"])
 
-        encore = str(input("Do you want to continue? (y/n) : "))
+        encore = str(input("Do you want to continue? (y/n) : ")).lower()
 
 
 if __name__ == "__main__":

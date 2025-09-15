@@ -1,25 +1,45 @@
 from dronecmds import *
 
 raw_commands =[
-    #backward(68),
-    #goLeft(42),
-    #goLeft(22),
-    #forward(2),
-    #goLeft(22),
-    #goDown(40),
-    #goUp(12),
-    #forward(6),
-    #goRight(3),
-    #goRight(3),
-    #forward(4),
+    #goUp(91),
+    #forward(98),
+    #goRight(47),
+    #forward(51),
+    #goUp(70),
+    #goUp(41),
+    #forward(73),
+    #forward(74),
+    #forward(65),
+    #goRight(95),
+    #forward(17),
+    #goRight(83),
+    #backward(28),
+    #backward(69),
+    #forward(8),
+    #forward(8),
+    #forward(8),
+    #goRight(59),
+    #forward(45),
+    #goRight(92),
+    #backward(67),
+    #backward(27),
+    #backward(35),
+    #goRight(43),
+    #forward(38),
+    #goUp(96),
+    #backward(21),
+    #backward(55),
+    #goDown(21),
+    #forward(28),
+    #goRight(9),
 ]
 def replay_best_episode():
-    locate(99, 99, 90)
+    locate(20, 25, 90)
     takeOff()
-    goLeft(80)
-    backward(56)
-    goDown(28)
+    goRight(428)
+    goUp(277)
+    forward(211)
     land()
-createRoom('(0 0, 101 0, 101 101, 0 101, 0 0)', 100)
-createTargetIn(22, 42, 53, 24, 44, 55)
+createRoom('(0 0, 499 0, 499 499, 0 499, 0 0)', 500)
+createTargetIn(449, 233, 353, 451, 235, 355)
 createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)
