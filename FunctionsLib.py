@@ -10,7 +10,7 @@ def initialize_settings():
     """
     global settings
 
-    # Saisie des paramètres de la salle, drone, et cible
+    # Entering room, drone, and target parameters
     room_x = int(input("Enter the depth of the room: "))
     room_y = int(input("Enter the width of the room: "))
     room_height = int(input("Enter the height of the room: "))
