@@ -4,9 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Last ver. : MainDrone deleted (had no usage)&#10;&#10;A version where the user won't need to close the subprocess anymore for re-training will sooner or later be uploaded...">
+    <list default="true" id="933cd47f-88c0-4683-a155-09ed3ea46bca" name="Changes" comment="Comparing Smooth Mov">
+      <change afterPath="$PROJECT_DIR$/simple_spaces.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dronesim.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dronesim.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FunctionsLib.py" beforeDir="false" afterPath="$PROJECT_DIR$/FunctionsLib.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/best_episode_commands.py" beforeDir="false" afterPath="$PROJECT_DIR$/best_episode_commands.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dronecmds.py" beforeDir="false" afterPath="$PROJECT_DIR$/dronecmds.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,7 +45,6 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2npeBMtevOSEmR5S3O1XNssNziq" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -237,8 +242,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-PY-243.22562.220" />
-        <option value="bundled-python-sdk-0fc6c617c4bd-9a18a617cbe4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.22562.220" />
+        <option value="bundled-js-predefined-d6986cc7102b-b598e85cdad2-JavaScript-PY-252.25557.178" />
+        <option value="bundled-python-sdk-ce6832f46686-7b97d883f26b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-252.25557.178" />
       </set>
     </attachedChunks>
   </component>
@@ -269,6 +274,16 @@
       <workItem from="1735308167029" duration="1817000" />
       <workItem from="1735314536625" duration="3000" />
       <workItem from="1736196517006" duration="97000" />
+      <workItem from="1736335539928" duration="166000" />
+      <workItem from="1736863542964" duration="3000" />
+      <workItem from="1740504420467" duration="153000" />
+      <workItem from="1740515097877" duration="7000" />
+      <workItem from="1754242793052" duration="3065000" />
+      <workItem from="1754255065951" duration="2986000" />
+      <workItem from="1754515894554" duration="47000" />
+      <workItem from="1757955947886" duration="298000" />
+      <workItem from="1757956867559" duration="6000" />
+      <workItem from="1757967751909" duration="300000" />
     </task>
     <task id="LOCAL-00001" summary="Q-Learning">
       <option name="closed" value="true" />
@@ -350,7 +365,95 @@
       <option name="project" value="LOCAL" />
       <updated>1734812735929</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="...">
+      <option name="closed" value="true" />
+      <created>1736335634928</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1736335634928</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Needed Libraries">
+      <option name="closed" value="true" />
+      <created>1754245290108</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1754245290108</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Data for README">
+      <option name="closed" value="true" />
+      <created>1754245304647</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1754245304647</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Project Report">
+      <option name="closed" value="true" />
+      <created>1754245441371</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1754245441371</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Better Resolution">
+      <option name="closed" value="true" />
+      <created>1754255352342</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1754255352342</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Better Resolution">
+      <option name="closed" value="true" />
+      <created>1754255428071</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1754255428071</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Better Resolution">
+      <option name="closed" value="true" />
+      <created>1754255518251</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1754255518251</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Better Resolution">
+      <option name="closed" value="true" />
+      <created>1754255557410</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1754255557410</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Useless Files">
+      <option name="closed" value="true" />
+      <created>1754255736108</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1754255736108</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Better Resolution">
+      <option name="closed" value="true" />
+      <created>1754256525000</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1754256525000</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Comparing Smooth Mov">
+      <option name="closed" value="true" />
+      <created>1754257447447</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1754257447447</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -376,13 +479,20 @@
     <MESSAGE value="Trying to fix ChangingTarget.py" />
     <MESSAGE value="Added coords verifications again" />
     <MESSAGE value="Last ver. : MainDrone deleted (had no usage)&#10;&#10;A version where the user won't need to close the subprocess anymore for re-training will sooner or later be uploaded..." />
-    <option name="LAST_COMMIT_MESSAGE" value="Last ver. : MainDrone deleted (had no usage)&#10;&#10;A version where the user won't need to close the subprocess anymore for re-training will sooner or later be uploaded..." />
+    <MESSAGE value="..." />
+    <MESSAGE value="Needed Libraries" />
+    <MESSAGE value="Data for README" />
+    <MESSAGE value="Project Report" />
+    <MESSAGE value="Useless Files" />
+    <MESSAGE value="Better Resolution" />
+    <MESSAGE value="Comparing Smooth Mov" />
+    <option name="LAST_COMMIT_MESSAGE" value="Comparing Smooth Mov" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1733486897545" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$best_episode_commands.coverage" NAME="best_episode_commands Coverage Results" MODIFIED="1754247025956" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$dronecmds.coverage" NAME="dronecmds Coverage Results" MODIFIED="1732530275293" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1740504432780" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$test06.coverage" NAME="test06 Coverage Results" MODIFIED="1732115113124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Tests" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$ChangingTarget.coverage" NAME="ChangingTarget Coverage Results" MODIFIED="1736196566195" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$main.coverage" NAME="main Coverage Results" MODIFIED="1735308732548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Drone_Bouchaud_Roche_Axel$ChangingTarget.coverage" NAME="ChangingTarget Coverage Results" MODIFIED="1757956156228" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

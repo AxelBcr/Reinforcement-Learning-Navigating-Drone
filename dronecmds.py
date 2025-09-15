@@ -9,7 +9,6 @@ from dronecore.roomshply import RoomShp
 from dronecore.dronevirt import *
 from viewermpl import ViewerBasicMPL
 from viewertk import ViewerTkMPL
-from gym import spaces
 import numpy as np
 
 #################

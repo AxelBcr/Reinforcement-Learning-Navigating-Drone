@@ -1,5 +1,5 @@
 import numpy as np
-from gym import spaces
+from simple_spaces import spaces
 from dronecmds import createRoom, createDrone
 from tqdm import tqdm
 
@@ -358,7 +358,7 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
         5: "goDown"
     }
 
-    room_description = f"(0 0, {room_x - 1} 0, {room_x - 1} {room_y - 1}, 0 {room_y - 1}, 0 0)"
+    room_description = f"(0 0, {room_x + 1} 0, {room_x + 1} {room_y + 1}, 0 {room_y + 1}, 0 0)"
 
     raw_commands = []
     for direction, distance in best_episode_actions:
