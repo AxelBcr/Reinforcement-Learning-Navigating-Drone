@@ -1,6 +1,8 @@
+<div align="center">
+
 # Reinforcement Learning Navigating Drone
 
-<div align="center">
+
 
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/License-GPL%20v3-green.svg)
