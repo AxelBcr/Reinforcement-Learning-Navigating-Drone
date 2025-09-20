@@ -315,7 +315,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - Reinforcement Learning implementation
 - Dynamic environment adaptation
 - Q-Learning algorithm optimization
-- Email: axelbouchaudroche@gmail.com
+- Email: axel@bouchaudroche.fr
 - GitHub: [AxelBcr](https://github.com/AxelBcr)
 
 **Pierre Chauvet**  
