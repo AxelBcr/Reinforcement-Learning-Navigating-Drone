@@ -322,6 +322,7 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 - Core framework development
 - Drone command interface
 - 3D visualization system
+- See reference : [Core Drone Code](https://github.com/pechauvet/simple_drone_py)
 - Email: pierre.chauvet@uco.fr
 - GitHub: [pechauvet](https://github.com/pechauvet)
 
