@@ -12,8 +12,17 @@ def initialize_settings():
 
     # Entering room, drone, and target parameters
     room_x = int(input("Enter the depth of the room: "))
+    while room_x <= 1:
+        room_x = int(input("Invalid depth. Please enter a value greater than 1: "))
+
     room_y = int(input("Enter the width of the room: "))
+    while room_y <= 1:
+        room_y = int(input("Invalid width. Please enter a value greater than 1: "))
+
     room_height = int(input("Enter the height of the room: "))
+    while room_height <= 81:
+        room_height = int(input(
+            "Invalid height. Must be greater than 81 (takeoff altitude is 80cm): "))
 
     target_x = int(input("Enter the x coordinate of the target: "))
     while target_x <= 0 or target_x >= room_x - 1:
@@ -41,7 +50,12 @@ def initialize_settings():
             "Invalid y coordinate. Please enter a value strictly between 0 and {}: ".format(room_y - 1)))
 
     num_episodes = int(input("Enter the number of episodes: "))
+    while num_episodes <= 0:
+        num_episodes = int(input("Invalid number. Please enter a positive number of episodes: "))
+
     max_steps_per_episode = int(input("Enter the maximum number of steps per episode: "))
+    while max_steps_per_episode <= 0:
+        max_steps_per_episode = int(input("Invalid number. Please enter a positive number of steps: "))
 
     settings = {
         "room_x": room_x,
@@ -68,6 +82,16 @@ class DroneVirtual:
         room_size=(settings["room_x"], settings["room_y"], settings["room_height"]),
         max_steps=settings["max_steps_per_episode"],
     ):
+        # Validate inputs
+        if drone is None:
+            raise ValueError("Drone object cannot be None.")
+        if room is None:
+            raise ValueError("Room object cannot be None.")
+        if any(d <= 0 for d in room_size):
+            raise ValueError(f"All room_size dimensions must be positive, got {room_size}.")
+        if max_steps <= 0:
+            raise ValueError(f"max_steps must be positive, got {max_steps}.")
+
         # Initializing Variables
         self.drone = drone
         self.room = room
@@ -123,6 +147,12 @@ class DroneVirtual:
         self.state = np.array([settings["drone_x"], settings["drone_y"], 80])  # takeOff() initial position is at 80
         self.drone.locate(self.state[0], self.state[1], 90, self.room)
 
+        if not self.drone.command.response:
+            raise RuntimeError(
+                f"Failed to locate drone at ({self.state[0]}, {self.state[1]}): "
+                f"result={self.drone.command.result}"
+            )
+
         # Reset variables
         self.visited_states = set()
         self.prev_distance = np.linalg.norm(self.state - self.target_position)
@@ -135,7 +165,13 @@ class DroneVirtual:
         Execute a step in the environment based on the chosen action.
         `action` is a tuple (direction, distance).
         """
+        if not isinstance(action, (tuple, list)) or len(action) != 2:
+            raise ValueError(f"Action must be a (direction, distance) tuple, got {action}.")
         direction, distance = action
+        if not (0 <= direction <= 5):
+            raise ValueError(f"Direction must be between 0 and 5, got {direction}.")
+        if distance < 0:
+            raise ValueError(f"Distance must be non-negative, got {distance}.")
 
         x, y, z = self.state
         if direction == 0 and y + distance < self.room_width:  # Move Up
@@ -153,6 +189,10 @@ class DroneVirtual:
 
         self.state = np.array([x, y, z])
         self.drone.locate(self.state[0], self.state[1], 90, self.room)
+
+        if not self.drone.command.response:
+            print(f"Warning: drone.locate() failed at ({self.state[0]}, {self.state[1]}), "
+                  f"result={self.drone.command.result}")
 
         # Increment step count
         self.step_count += 1
@@ -276,6 +316,13 @@ def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
     """
     global best_episode_reward, best_episode_trajectory, best_episode_actions, trajectory, trajectory_actions
 
+    if env_with_viewer is None:
+        raise ValueError("Environment (env_with_viewer) cannot be None.")
+    if num_episodes <= 0:
+        raise ValueError(f"num_episodes must be positive, got {num_episodes}.")
+    if max_steps_per_episode <= 0:
+        raise ValueError(f"max_steps_per_episode must be positive, got {max_steps_per_episode}.")
+
     # Training parameters
     alpha = 0.05  # Learning rate
     gamma = 0.995  # Importance of future rewards
@@ -292,7 +339,12 @@ def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
     best_episode_reward = -float('inf')
 
     for episode in tqdm(range(num_episodes), desc="Training", unit="episode"):
-        state = env_with_viewer.reset()
+        try:
+            state = env_with_viewer.reset()
+        except RuntimeError as e:
+            print(f"Error resetting environment at episode {episode}: {e}")
+            continue
+
         total_reward = 0
         trajectory = []
         trajectory_actions = []
@@ -311,7 +363,13 @@ def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
             else:
                 action = np.unravel_index(np.argmax(q_table[state]), q_table[state].shape)
 
-            next_state, reward, done, _ = env_with_viewer.step(action)
+            try:
+                next_state, reward, done, _ = env_with_viewer.step(action)
+            except (ValueError, RuntimeError) as e:
+                print(f"Error during step {step} of episode {episode}: {e}")
+                done = True
+                break
+
             old_value = q_table[state][action[0]][action[1]]
             next_max = np.max(q_table[next_state])
             q_table[state][action[0]][action[1]] = old_value + alpha * (reward + gamma * next_max - old_value)
@@ -362,6 +420,14 @@ def writing_commands(
     best_episode_actions, room_x, room_y, room_height,
     drone_x, drone_y, target_x, target_y, target_z,
 ):
+    if not best_episode_actions:
+        print("Warning: No actions to write. Skipping command file generation.")
+        return
+
+    if room_x <= 0 or room_y <= 0 or room_height <= 0:
+        raise ValueError(
+            f"Room dimensions must be positive: room_x={room_x}, room_y={room_y}, room_height={room_height}"
+        )
 
     # Convert actions to commands
     actions_to_commands = {
@@ -381,46 +447,50 @@ def writing_commands(
     # Extract positions from the environment
     initial_heading = 90  # Modify based on actual logic
 
-    with open("best_episode_commands.py", "w") as f:
-        f.write("from dronecmds import *\n\n")
+    try:
+        with open("best_episode_commands.py", "w") as f:
+            f.write("from dronecmds import *\n\n")
 
-        f.write("raw_commands =[\n")
-        for direction, distance in best_episode_actions:
-            command = f"{actions_to_commands[direction]}({distance})"
-            f.write(f"    #{command},\n")
-        f.write("]\n")
+            f.write("raw_commands =[\n")
+            for direction, distance in best_episode_actions:
+                command = f"{actions_to_commands[direction]}({distance})"
+                f.write(f"    #{command},\n")
+            f.write("]\n")
 
-        f.write("def replay_best_episode():\n")
+            f.write("def replay_best_episode():\n")
 
-        # Save initial drone position and heading
-        f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
+            # Save initial drone position and heading
+            f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
 
-        # Add movement commands
-        f.write("    takeOff()\n")
+            # Add movement commands
+            f.write("    takeOff()\n")
 
-        # Smoothing raw_commands
-        for direction, distance in smoothed_commands:
-            f.write(f"    {actions_to_commands[direction]}({distance})\n")
+            # Smoothing raw_commands
+            for direction, distance in smoothed_commands:
+                f.write(f"    {actions_to_commands[direction]}({distance})\n")
 
-        # End of the flight
-        f.write("    land()\n")
+            # End of the flight
+            f.write("    land()\n")
 
-        # Room setup
-        f.write(f"createRoom('{room_description}', {room_height - 1})\n")
+            # Room setup
+            f.write(f"createRoom('{room_description}', {room_height - 1})\n")
 
-        # Target position (bounds must be strictly inside the room)
-        low_x = max(target_x - 1, 1)
-        high_x = min(target_x + 1, room_x - 2)
-        low_y = max(target_y - 1, 1)
-        high_y = min(target_y + 1, room_y - 2)
-        low_z = max(target_z - 1, 1)
-        high_z = min(target_z + 1, room_height - 2)
+            # Target position (bounds must be strictly inside the room)
+            low_x = max(target_x - 1, 1)
+            high_x = min(target_x + 1, room_x - 2)
+            low_y = max(target_y - 1, 1)
+            high_y = min(target_y + 1, room_y - 2)
+            low_z = max(target_z - 1, 1)
+            high_z = min(target_z + 1, room_height - 2)
 
-        f.write(f"createTargetIn({low_x}, {low_y}, {low_z}, "
-                f"{high_x}, {high_y}, {high_z})\n")
+            f.write(f"createTargetIn({low_x}, {low_y}, {low_z}, "
+                    f"{high_x}, {high_y}, {high_z})\n")
 
-        # Save drone creation
-        f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
+            # Save drone creation
+            f.write("createDrone(DRONE_VIRTUAL, VIEWER_TKMPL, progfunc=replay_best_episode)\n")
+    except IOError as e:
+        print(f"Error writing commands file: {e}")
+        raise
 
 
 # Training parameters (resetting Q-table)
@@ -452,7 +522,13 @@ room_description = (
     f"0 {settings['room_y']-1}, 0 0)"
 )
 room = createRoom(room_description, settings["room_height"] - 1)
+if room is None:
+    raise RuntimeError("Failed to create room. Cannot proceed with simulation.")
+
 drone = createDrone("DroneVirtual", "ViewerTkMPL")
+if drone is None:
+    raise RuntimeError("Failed to create drone. Cannot proceed with simulation.")
+
 env_with_viewer = DroneVirtual(
     drone, room,
     room_size=(settings["room_x"] - 1, settings["room_y"] - 1, settings["room_height"] - 1),
