@@ -66,7 +66,7 @@ def main():
         except Exception as e:
             print(f"Error during training: {e}")
             encore = str(input("Do you want to continue? (y/n) : ")).lower()
-            continue
+            continue  # encore is checked by the while condition
 
         writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],
                          last_drone_position[0], last_drone_position[1],

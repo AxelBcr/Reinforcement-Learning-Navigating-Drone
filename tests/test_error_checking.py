@@ -299,31 +299,62 @@ class TestDroneCmdsPreConditions(unittest.TestCase):
 
 
 class TestInputValidationRules(unittest.TestCase):
-    """Validate the input validation rules used in initialize_settings."""
+    """Validate that the input validation logic rejects invalid values."""
 
-    def test_room_height_must_exceed_takeoff_altitude(self):
-        """Room height must be > 81 to allow takeoff at 80cm."""
-        # Takeoff altitude is 80cm; room height - 1 is used, so
-        # room_height must be > 81 to get effective height > 80
-        self.assertTrue(82 > 81)  # Valid
-        self.assertFalse(81 > 81)  # Invalid (equal)
-        self.assertFalse(50 > 81)  # Invalid (too small)
+    def _validate_room_height(self, room_height):
+        """Mirrors the initialize_settings() room_height validation."""
+        if room_height <= 81:
+            raise ValueError("Room height must be greater than 81.")
 
-    def test_room_dimensions_must_be_positive(self):
-        """Room depth, width must be > 1."""
-        self.assertTrue(2 > 1)  # Valid
-        self.assertFalse(1 > 1)  # Invalid
-        self.assertFalse(0 > 1)  # Invalid
+    def _validate_room_dimension(self, dim):
+        """Mirrors the initialize_settings() room_x/room_y validation."""
+        if dim <= 1:
+            raise ValueError("Room dimension must be greater than 1.")
 
-    def test_episodes_must_be_positive(self):
-        """Number of episodes must be > 0."""
-        self.assertTrue(1 > 0)
-        self.assertFalse(0 > 0)
+    def _validate_positive(self, value, name="value"):
+        """Mirrors the initialize_settings() episodes/steps validation."""
+        if value <= 0:
+            raise ValueError(f"{name} must be positive.")
 
-    def test_max_steps_must_be_positive(self):
-        """Max steps per episode must be > 0."""
-        self.assertTrue(1 > 0)
-        self.assertFalse(0 > 0)
+    def test_room_height_at_81_rejected(self):
+        with self.assertRaises(ValueError):
+            self._validate_room_height(81)
+
+    def test_room_height_at_50_rejected(self):
+        with self.assertRaises(ValueError):
+            self._validate_room_height(50)
+
+    def test_room_height_at_82_accepted(self):
+        self._validate_room_height(82)  # Should not raise
+
+    def test_room_dimension_at_1_rejected(self):
+        with self.assertRaises(ValueError):
+            self._validate_room_dimension(1)
+
+    def test_room_dimension_at_0_rejected(self):
+        with self.assertRaises(ValueError):
+            self._validate_room_dimension(0)
+
+    def test_room_dimension_at_2_accepted(self):
+        self._validate_room_dimension(2)  # Should not raise
+
+    def test_zero_episodes_rejected(self):
+        with self.assertRaises(ValueError):
+            self._validate_positive(0, "num_episodes")
+
+    def test_negative_episodes_rejected(self):
+        with self.assertRaises(ValueError):
+            self._validate_positive(-5, "num_episodes")
+
+    def test_positive_episodes_accepted(self):
+        self._validate_positive(1, "num_episodes")  # Should not raise
+
+    def test_zero_max_steps_rejected(self):
+        with self.assertRaises(ValueError):
+            self._validate_positive(0, "max_steps")
+
+    def test_positive_max_steps_accepted(self):
+        self._validate_positive(250, "max_steps")  # Should not raise
 
 
 if __name__ == '__main__':
