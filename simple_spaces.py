@@ -1,4 +1,4 @@
-# iMPORTS
+# Imports
 from __future__ import annotations
 from typing import Iterable, Sequence, Tuple as TupleType, Any
 import numpy as np

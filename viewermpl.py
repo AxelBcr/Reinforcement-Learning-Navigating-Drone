@@ -1,4 +1,5 @@
-from dronecore import ADrone, ARoom, AViewer, DroneState, Position, cos, sin
+from dronecore import ADrone, ARoom, AViewer, DroneState, Position
+from math import cos, sin
 import matplotlib.pyplot as plt
 import mplext  # noqa: F401
 
