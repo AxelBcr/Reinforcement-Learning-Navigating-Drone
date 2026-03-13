@@ -92,6 +92,7 @@ def createRoom(description: str | tuple, height: int):
         print(f"Error while creating room: {e}")
         room = None  # Ensure room is None if initialization fails
         raise e
+    return room
 
 
 def createDrone(droneId: str, viewerId: str, progfunc=None):
