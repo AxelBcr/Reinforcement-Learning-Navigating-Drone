@@ -4,7 +4,9 @@ import tkinter.ttk as ttk
 from idlelib.tooltip import Hovertip
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 import dronecmds
-from dronecore import *
+import time
+from math import cos, sin
+from dronecore import ADrone, ARoom, AViewer, DroneState, Position
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from PIL import Image, ImageTk
@@ -58,7 +60,7 @@ class ViewerTkMPL(AViewer):
         self.delayScale.pack(side=tk.LEFT, padx=2, pady=2)
         Hovertip(self.delayScale, 'Change the simulation speed')
         # Creation of the commands viewer label
-        self.infolbl=tk.Label(self.window, text=self.getStateString(), bg='gray15', fg='white', relief=tk.RAISED)
+        self.infolbl = tk.Label(self.window, text=self.getStateString(), bg='gray15', fg='white', relief=tk.RAISED)
         # Creation of the Matplolib chart
         self.fig, self.ax = plt.subplots(1, 1, subplot_kw={"projection": "3d"}, dpi=70, figsize=(4, 4))
         self._drawFigure()
@@ -136,9 +138,9 @@ class ViewerTkMPL(AViewer):
         """
         Reset the target's position.
         """
-        if not self.running :
+        if not self.running:
             dronecmds.createTarget()
-            self.target=dronecmds.target
+            self.target = dronecmds.target
             self.drone.target = self.target
             self._drawFigure()
             self.canvas.draw()
@@ -161,16 +163,16 @@ class ViewerTkMPL(AViewer):
         """
         self.window.quit()
 
-    def _setRunning(self, value:bool):
+    def _setRunning(self, value: bool):
         """
         Set the drone's simulation state (set attribute 'self.running' and change button's state).
         :param value: True if the simulation is launched, False otherwise
         """
         self.running = value
-        if value :
+        if value:
             self.targetButton.config(state=tk.DISABLED)
             self.runButton.config(state=tk.DISABLED)
-        else :
+        else:
             self.targetButton.config(state=tk.NORMAL)
             self.runButton.config(state=tk.NORMAL)
 
@@ -207,10 +209,10 @@ class ViewerTkMPL(AViewer):
             else:
                 self.ax.scatter(p2.x, p2.y, p2.z, color=(.9, .4, .3), marker="X", s=80)
                 self.ax.annotate3D('Crash !', (p2.x, p2.y, p2.z),
-                              xytext=(30, -30),
-                              textcoords='offset points',
-                              bbox=dict(boxstyle="round", fc="tomato"),
-                              arrowprops=dict(arrowstyle="-|>", ec='tomato', fc='black', lw=5))
+                                   xytext=(30, -30),
+                                   textcoords='offset points',
+                                   bbox=dict(boxstyle="round", fc="tomato"),
+                                   arrowprops=dict(arrowstyle="-|>", ec='tomato', fc='black', lw=5))
             self.canvas.draw()
             self._pause_update(5)
         else:
@@ -250,7 +252,6 @@ class NavToolbarTk(NavigationToolbar2Tk):
 
     # override _Button()
     def _Button(self, text, image_file, toggle, command):
-        #b = super()._Button(text, image_file, toggle, command)
         if image_file.find("_large") == -1:
             try:
                 (name, ext) = image_file.rsplit(".", 1)  # Use rsplit to handle multiple periods
@@ -259,7 +260,6 @@ class NavToolbarTk(NavigationToolbar2Tk):
             image_file = name + "_large." + ext
         img_file = os.path.join(mpl.get_data_path(), 'images', image_file)
         im = tk.PhotoImage(master=self, file=img_file)
-        #im = im.zoom(2, 2)
         b = tk.Button(master=self, text=text, padx=2, pady=2, image=im, command=command)
         b._ntimage = im
         if self.vertical:
