@@ -1,6 +1,10 @@
 import subprocess
 import sys
-from FunctionsLib import *
+
+from FunctionsLib import (
+    initialize_q_table, get_training_results, writing_commands,
+    training_loop, reset_environment, env_with_viewer
+)
 
 q_table = initialize_q_table()
 
@@ -15,22 +19,21 @@ subprocess.run([sys.executable, "best_episode_commands.py"])
 
 
 def main():
-    from FunctionsLib import settings
+    global settings
     encore = "y"
 
     while encore == "y":
-        #Gets  the last drone position
+        # Gets the last drone position
         last_drone_position = (settings["target_x"], settings["target_y"])
 
-        #Asks for the new target position
+        # Asks for the new target position
         new_target_position = (
             int(input("Enter the x coordinate of the new target: ")),
             int(input("Enter the y coordinate of the new target: ")),
             int(input("Enter the z coordinate of the new target: "))
         )
 
-
-        #Updates the settings
+        # Updates the settings
         settings["target_x"] = new_target_position[0]
         settings["target_y"] = new_target_position[1]
         settings["target_z"] = new_target_position[2]
@@ -41,7 +44,7 @@ def main():
         # Reset the environment for the new target
         reset_environment(new_target_position, env_with_viewer)
 
-        #Runs the training with new positions, and updates the commands
+        # Runs the training with new positions, and updates the commands
         training_loop(env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"])
 
         best_episode_actions, best_episode_trajectory, settings = get_training_results(env_with_viewer)
@@ -49,7 +52,6 @@ def main():
         writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],
                          last_drone_position[0], last_drone_position[1],
                          new_target_position[0], new_target_position[1], new_target_position[2])
-
 
         print("Running updated best_episode_commands.py...")
         subprocess.run([sys.executable, "best_episode_commands.py"])
