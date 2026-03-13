@@ -114,6 +114,15 @@ class ARoom(ABC):
         pass
 
     @abstractmethod
+    def isPositionInside(self, position: Position) -> bool:
+        """
+        Check if a position (x, y) is strictly inside the room (not on or outside walls).
+        :param position: the position to check
+        :return: True if strictly inside the room, False otherwise
+        """
+        pass
+
+    @abstractmethod
     def getWalls2D(self, h: int = 0) -> []:
         """
         Get the array of walls coordinates in (x,y) space.

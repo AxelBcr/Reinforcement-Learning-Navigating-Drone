@@ -16,24 +16,29 @@ def initialize_settings():
     room_height = int(input("Enter the height of the room: "))
 
     target_x = int(input("Enter the x coordinate of the target: "))
-    while target_x < 0 or target_x >= room_x:
-        target_x = int(input("Invalid x coordinate. Please enter a value between 0 and the depth of the room: "))
+    while target_x <= 0 or target_x >= room_x - 1:
+        target_x = int(input(
+            "Invalid x coordinate. Please enter a value strictly between 0 and {}: ".format(room_x - 1)))
 
     target_y = int(input("Enter the y coordinate of the target: "))
-    while target_y < 0 or target_y >= room_y:
-        target_y = int(input("Invalid y coordinate. Please enter a value between 0 and the width of the room: "))
+    while target_y <= 0 or target_y >= room_y - 1:
+        target_y = int(input(
+            "Invalid y coordinate. Please enter a value strictly between 0 and {}: ".format(room_y - 1)))
 
     target_z = int(input("Enter the z coordinate of the target: "))
-    while target_z < 0 or target_z >= room_height:
-        target_z = int(input("Invalid z coordinate. Please enter a value between 0 and the height of the room: "))
+    while target_z <= 0 or target_z >= room_height - 1:
+        target_z = int(input(
+            "Invalid z coordinate. Please enter a value strictly between 0 and {}: ".format(room_height - 1)))
 
     drone_x = int(input("Enter the x coordinate of the drone: "))
-    while drone_x < 0 or drone_x >= room_x:
-        drone_x = int(input("Invalid x coordinate. Please enter a value between 0 and the depth of the room: "))
+    while drone_x <= 0 or drone_x >= room_x - 1:
+        drone_x = int(input(
+            "Invalid x coordinate. Please enter a value strictly between 0 and {}: ".format(room_x - 1)))
 
     drone_y = int(input("Enter the y coordinate of the drone: "))
-    while drone_y < 0 or drone_y >= room_y:
-        drone_y = int(input("Invalid y coordinate. Please enter a value between 0 and the width of the room: "))
+    while drone_y <= 0 or drone_y >= room_y - 1:
+        drone_y = int(input(
+            "Invalid y coordinate. Please enter a value strictly between 0 and {}: ".format(room_y - 1)))
 
     num_episodes = int(input("Enter the number of episodes: "))
     max_steps_per_episode = int(input("Enter the maximum number of steps per episode: "))
@@ -133,17 +138,17 @@ class DroneVirtual:
         direction, distance = action
 
         x, y, z = self.state
-        if direction == 0 and y + distance <= self.room_depth:  # Move Up
+        if direction == 0 and y + distance < self.room_depth:  # Move Up
             y += distance
-        elif direction == 1 and y - distance >= 0:  # Move Down
+        elif direction == 1 and y - distance > 0:  # Move Down
             y -= distance
-        elif direction == 2 and x - distance >= 0:  # Move Left
+        elif direction == 2 and x - distance > 0:  # Move Left
             x -= distance
-        elif direction == 3 and x + distance <= self.room_width:  # Move Right
+        elif direction == 3 and x + distance < self.room_width:  # Move Right
             x += distance
-        elif direction == 4 and z + distance <= self.room_height:  # Ascend
+        elif direction == 4 and z + distance < self.room_height:  # Ascend
             z += distance
-        elif direction == 5 and z - distance >= 0:  # Descend
+        elif direction == 5 and z - distance > 0:  # Descend
             z -= distance
 
         self.state = np.array([x, y, z])

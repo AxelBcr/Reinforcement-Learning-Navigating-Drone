@@ -35,10 +35,16 @@ class DroneVirtual(ADrone):
         self.command.ctype = CommandType.CMD_LOCATE
         self.command.amount = -1
         if self.state == DroneState.ONGROUND:
-            self.command.response = True
             self.room = room
-            self.position.setCoord(x, y, 0, pi * heading / 180)
-            self.previous.setCoord(x, y, 0, self.position.heading)
+            if not room.isPositionInside(Position(x, y, 0)):
+                self.command.response = False
+                self.command.result = CommandResult.RES_NO
+                self.display(
+                    'WARNING : position ({}, {}) is on or outside the room walls'.format(x, y))
+            else:
+                self.command.response = True
+                self.position.setCoord(x, y, 0, pi * heading / 180)
+                self.previous.setCoord(x, y, 0, self.position.heading)
         else:
             self.command.response = False
             self.command.result = CommandResult.RES_NO
@@ -48,6 +54,13 @@ class DroneVirtual(ADrone):
         self.command.ctype = CommandType.CMD_TAKEOFF
         self.command.amount = -1
         if self.state == DroneState.ONGROUND:
+            if self.room is not None and self.takeoffAltitude >= self.room.getHeight():
+                self.command.response = False
+                self.command.result = CommandResult.RES_NO
+                self.display(
+                    "Cannot take off : takeoff altitude ({} cm) exceeds room height ({} cm)".format(
+                        self.takeoffAltitude, self.room.getHeight()))
+                return
             self.savePosition()
             self.position.z += self.takeoffAltitude
             self.command.response = True

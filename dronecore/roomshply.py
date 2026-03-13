@@ -75,6 +75,10 @@ class RoomShp(ARoom):
                 raise Exception("The second point is not inside the room")
             return Position(uniform(p1.x, p2.x), uniform(p1.y, p2.y), uniform(p1.z, p2.z))
 
+    def isPositionInside(self, position: Position) -> bool:
+        pt = Point(position.x, position.y)
+        return self.geometry.contains(pt)
+
     def getWalls2D(self, h: int = 0):
         coords = list(self.geometry.exterior.coords)
         x = []
