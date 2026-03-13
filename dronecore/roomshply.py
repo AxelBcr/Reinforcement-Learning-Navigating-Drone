@@ -2,6 +2,8 @@
 Implémentation de la classe abstraite ARoom basée sur le package shapely. Une pièce
 est définie comme un polygone (classe shapely.Polygon).
 """
+from __future__ import annotations
+
 from dronecore.envgeo import ARoom, Position
 from shapely import Polygon, LineString, intersects, intersection, Point
 from shapely.wkt import loads
