@@ -203,9 +203,10 @@ class ViewerTkMPL(AViewer):
             if self.drone.getState() != DroneState.KO:
                 dx = 50.0 * cos(p2.heading)
                 dy = 50.0 * sin(p2.heading)
-                self.ax.arrow3D(p2.x - dx / 2, p2.y - dy / 2, p2.z,
-                                dx, dy, 0,
-                                mutation_scale=15, ec='green', fc=(.2, .7, .2))
+                self.ax.quiver(p2.x, p2.y, p2.z,
+                               dx, dy, 0,
+                               arrow_length_ratio=0.1, length= 0, color='green', linewidth=2)
+
             else:
                 self.ax.scatter(p2.x, p2.y, p2.z, color=(.9, .4, .3), marker="X", s=80)
                 self.ax.annotate3D('Crash !', (p2.x, p2.y, p2.z),
