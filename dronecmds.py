@@ -6,10 +6,10 @@ qui existent pour un drone de type Tello Edu.
 """
 
 from dronecore.roomshply import RoomShp
-from dronecore.dronevirt import *
-from viewermpl import ViewerBasicMPL
+from dronecore.dronevirt import DroneVirtual
+from dronecore import ARoom, Position, ADrone, AViewer
 from viewertk import ViewerTkMPL
-import numpy as np
+from math import pi
 
 #################
 #   Constantes  #
@@ -44,22 +44,22 @@ Constante qui identifie une vue associée à la classe ViewerTkMPL.
 # Objets de base pour la simulation #
 #####################################
 
-room:ARoom = None
+room: ARoom = None
 """
 La pièce à explorer.
 """
 
-target:Position = None
+target: Position = None
 """
 La cible à détecter dans la pièce.
 """
 
-drone:ADrone = None
+drone: ADrone = None
 """
 Le drone à commander.
 """
 
-viewer:AViewer = None
+viewer: AViewer = None
 """
 L'interface de visualisation à utiliser.
 """
@@ -67,10 +67,11 @@ L'interface de visualisation à utiliser.
 ###########################################
 # Commandes à utiliser pour la simulation #
 ###########################################
-def display() :
+
+
+def display():
     drone.display()
-    #if viewer is not None :
-    #    viewer.display()
+
 
 def createRoom(description: str | tuple, height: int):
     """
@@ -114,34 +115,35 @@ def createDrone(droneId: str, viewerId: str, progfunc=None):
     return drone
 
 
-def createTarget() :
+def createTarget():
     """
     Création de la cible à une position aléatoire dans la pièce à explorer. Ce doit
     être la seconde instruction à appeler si on veut ajouter une cible à chercher.
     Créer une cible n'est pas obligatoire.
     """
     global target
-    target=room.getRandomPosition()
-    print("Target : x={} y={} z={}".format(target.x, target.y, target.y))
+    target = room.getRandomPosition()
+    print("Target : x={} y={} z={}".format(target.x, target.y, target.z))
 
-def createTargetIn(x1:float, y1:float, z1:float, x2:float, y2:float, z2:float) :
+
+def createTargetIn(x1: float, y1: float, z1: float, x2: float, y2: float, z2: float):
     """
     Création de la cible à une position aléatoire dans le cube défini par (x1,y1,z1)
     et (x2,y2,z2). Ce doit être la seconde instruction à appeler si on veut ajouter
     une cible à chercher.
-	:param x1 abscisse inférieure gauche du cube
-	:param y1 ordonnée inférieure gauche du cube
-	:param z1 hauteur inférieure gauche du cube
-	:param x2 abscisse supérieure droite du cube
-	:param y2 ordonnée supérieure droite du cube
-	:param z2 hauteur supérieure droite du cube
+    :param x1 abscisse inférieure gauche du cube
+    :param y1 ordonnée inférieure gauche du cube
+    :param z1 hauteur inférieure gauche du cube
+    :param x2 abscisse supérieure droite du cube
+    :param y2 ordonnée supérieure droite du cube
+    :param z2 hauteur supérieure droite du cube
     """
     global target
-    target=room.getRandomPosition(Position(x1,y1,z1), Position(x2,y2,z2))
+    target = room.getRandomPosition(Position(x1, y1, z1), Position(x2, y2, z2))
     print("Target : x={} y={} z={}".format(target.x, target.y, target.z))
 
 
-def locate(x, y, heading) :
+def locate(x, y, heading):
     """
     Positionne le drone sur le sol (z=0) par rapport au repaire de la pièce.
     :param x: abscisse du drone
@@ -151,22 +153,25 @@ def locate(x, y, heading) :
     drone.locate(x, y, heading, room)
     drone.display()
 
-def takeOff() :
+
+def takeOff():
     """
     Le drone décolle et va se positionner en vol stationnaire (à environ 80cm du sol dans le cas
-	du drone tello edu). Si le drone est déjà en vol, la commande est sans effet.
+    du drone tello edu). Si le drone est déjà en vol, la commande est sans effet.
     """
     drone.takeOff()
     drone.display()
 
-def land() :
+
+def land():
     """
     Le drone se pose droit sous lui. Sans effet si le drone est déjà posé.
     """
     drone.land()
     drone.display()
 
-def forward(n:int) :
+
+def forward(n: int):
     """
     Le drone avance droit devant lui de n cm. Sans effet si le drone n’a pas décollé.
     :param n: nombre de cm
@@ -174,7 +179,8 @@ def forward(n:int) :
     drone.forward(n)
     drone.display()
 
-def backward(n:int) :
+
+def backward(n: int):
     """
     Le drone recule de n cm (sens opposé à forward), sans changer de cap.
     Sans effet si le drone n’a pas décollé.
@@ -183,7 +189,8 @@ def backward(n:int) :
     drone.backward(n)
     drone.display()
 
-def goUp(n:int) :
+
+def goUp(n: int):
     """
     Le drone s’élève de n cm par rapport à son altitude courante.
     Sans effet si le drone n’a pas décollé.
@@ -192,7 +199,8 @@ def goUp(n:int) :
     drone.goUp(n)
     drone.display()
 
-def goDown(n:int) :
+
+def goDown(n: int):
     """
     Le drone descend de n cm par rapport à son altitude courante.
     Sans effet si le drone n’a pas décollé.
@@ -201,7 +209,8 @@ def goDown(n:int) :
     drone.goDown(n)
     drone.display()
 
-def goLeft(n:int) :
+
+def goLeft(n: int):
     """
     Le drone se déplace latéralement de n cm sur sa gauche.
     Sans effet si le drone n’a pas décollé.
@@ -210,7 +219,8 @@ def goLeft(n:int) :
     drone.goLeft(n)
     drone.display()
 
-def goRight(n:int) :
+
+def goRight(n: int):
     """
     Le drone se déplace latéralement de n cm sur sa droite.
     Sans effet si le drone n’a pas décollé.
@@ -219,7 +229,8 @@ def goRight(n:int) :
     drone.goRight(n)
     drone.display()
 
-def rotateLeft(n:int) :
+
+def rotateLeft(n: int):
     """
     Le drone pivote de n degrés vers sa gauche, sans modifier sa position.
     Sans effet si le drone n’a pas décollé.
@@ -228,7 +239,8 @@ def rotateLeft(n:int) :
     drone.rotateLeft(n)
     drone.display()
 
-def rotateRight(n:int) :
+
+def rotateRight(n: int):
     """
     Le drone pivote de n degrés vers sa droite, sans modifier sa position.
     Sans effet si le drone n’a pas décollé.
@@ -237,34 +249,38 @@ def rotateRight(n:int) :
     drone.rotateRight(n)
     drone.display()
 
-def isTargetDetected() -> bool :
+
+def isTargetDetected() -> bool:
     """
     Interroge le drone pour savoir s'il a trouvé la cible.
     :return: True si la cible est détectée, False sinon
     """
     return drone.isTargetDetected()
 
-def getPosition() -> Position :
+
+def getPosition() -> Position:
     """
     Fonction qui retourne la position courante du drone.
     :return: la position
     """
     return drone.position
 
-def getHeight() -> int :
+
+def getHeight() -> int:
     """
     Fonction qui retourne l’altitude du drone (approximative pour un drone réel), en cm.
     :return: l'altitude courante en cm
     """
     return drone.getHeight()
 
-def getHeading(unit:str="radian") -> float|int :
+
+def getHeading(unit: str = "radian") -> float | int:
     """
     Récupère le cap (angle par rapport à l'axe des abscisses), en radian ou en degrés.
     :param unit:
     :return: le cap
     """
-    if unit=="radian" :
+    if unit == "radian":
         return drone.getHeading()
-    else :
-        return round(drone.getHeading()*180/pi)
+    else:
+        return round(drone.getHeading() * 180 / pi)

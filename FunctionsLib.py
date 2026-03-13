@@ -15,26 +15,30 @@ def initialize_settings():
     room_y = int(input("Enter the width of the room: "))
     room_height = int(input("Enter the height of the room: "))
 
-
     target_x = int(input("Enter the x coordinate of the target: "))
-    while target_x < 0 or target_x >= room_x:
-        target_x = int(input("Invalid x coordinate. Please enter a value between 0 and the depth of the room: "))
+    while target_x <= 0 or target_x >= room_x - 1:
+        target_x = int(input(
+            "Invalid x coordinate. Please enter a value strictly between 0 and {}: ".format(room_x - 1)))
 
     target_y = int(input("Enter the y coordinate of the target: "))
-    while target_y < 0 or target_y >= room_y:
-        target_y = int(input("Invalid y coordinate. Please enter a value between 0 and the width of the room: "))
+    while target_y <= 0 or target_y >= room_y - 1:
+        target_y = int(input(
+            "Invalid y coordinate. Please enter a value strictly between 0 and {}: ".format(room_y - 1)))
 
     target_z = int(input("Enter the z coordinate of the target: "))
-    while target_z < 0 or target_z >= room_height:
-        target_z = int(input("Invalid z coordinate. Please enter a value between 0 and the height of the room: "))
+    while target_z <= 0 or target_z >= room_height - 1:
+        target_z = int(input(
+            "Invalid z coordinate. Please enter a value strictly between 0 and {}: ".format(room_height - 1)))
 
     drone_x = int(input("Enter the x coordinate of the drone: "))
-    while drone_x < 0 or drone_x >= room_x:
-        drone_x = int(input("Invalid x coordinate. Please enter a value between 0 and the depth of the room: "))
+    while drone_x <= 0 or drone_x >= room_x - 1:
+        drone_x = int(input(
+            "Invalid x coordinate. Please enter a value strictly between 0 and {}: ".format(room_x - 1)))
 
     drone_y = int(input("Enter the y coordinate of the drone: "))
-    while drone_y < 0 or drone_y >= room_y:
-        drone_y = int(input("Invalid y coordinate. Please enter a value between 0 and the width of the room: "))
+    while drone_y <= 0 or drone_y >= room_y - 1:
+        drone_y = int(input(
+            "Invalid y coordinate. Please enter a value strictly between 0 and {}: ".format(room_y - 1)))
 
     num_episodes = int(input("Enter the number of episodes: "))
     max_steps_per_episode = int(input("Enter the maximum number of steps per episode: "))
@@ -54,17 +58,21 @@ def initialize_settings():
 
     return settings
 
-#%% Innit Settings
+
 settings = initialize_settings()
 
-#%% DroneVirtual, Compute_Reward, Step, Reset, Target, Room
+
 class DroneVirtual:
-    def __init__(self, drone, room, room_size=(settings["room_x"], settings["room_y"], settings["room_height"]), max_steps= settings["max_steps_per_episode"]):
+    def __init__(
+        self, drone, room,
+        room_size=(settings["room_x"], settings["room_y"], settings["room_height"]),
+        max_steps=settings["max_steps_per_episode"],
+    ):
         # Initializing Variables
         self.drone = drone
         self.room = room
         self.room_depth, self.room_width, self.room_height = room_size
-        self.max_distance = min(self.room_width, self.room_depth, self.room_height)-1
+        self.max_distance = min(self.room_width, self.room_depth, self.room_height) - 1
         self.target_position = self.create_target()
         self.radius_detection = 50
         self.max_steps = max_steps
@@ -130,17 +138,17 @@ class DroneVirtual:
         direction, distance = action
 
         x, y, z = self.state
-        if direction == 0 and y + distance <= self.room_depth:  # Move Up
+        if direction == 0 and y + distance < self.room_depth:  # Move Up
             y += distance
-        elif direction == 1 and y - distance >= 0:  # Move Down
+        elif direction == 1 and y - distance > 0:  # Move Down
             y -= distance
-        elif direction == 2 and x - distance >= 0:  # Move Left
+        elif direction == 2 and x - distance > 0:  # Move Left
             x -= distance
-        elif direction == 3 and x + distance <= self.room_width:  # Move Right
+        elif direction == 3 and x + distance < self.room_width:  # Move Right
             x += distance
-        elif direction == 4 and z + distance <= self.room_height:  # Ascend
+        elif direction == 4 and z + distance < self.room_height:  # Ascend
             z += distance
-        elif direction == 5 and z - distance >= 0:  # Descend
+        elif direction == 5 and z - distance > 0:  # Descend
             z -= distance
 
         self.state = np.array([x, y, z])
@@ -184,7 +192,8 @@ class DroneVirtual:
         self.visited_states.add(discretized_state)
 
         # Penalty for each step to encourage efficiency
-        reward -= (0.5+(settings["max_steps_per_episode"]/settings["num_episodes"])) * step_count  # Scaled penalty based on step count
+        step_penalty = 0.5 + (settings["max_steps_per_episode"] / settings["num_episodes"])
+        reward -= step_penalty * step_count  # Scaled penalty based on step count
 
         # Update the previous distance for the next step
         self.prev_distance = distance
@@ -260,7 +269,7 @@ def smooth_commands(commands):
     return smoothed_commands
 
 
-#Training code
+# Training code
 def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
     """
     Boucle d'entraînement pour entraîner le drone.
@@ -335,7 +344,9 @@ def get_training_results(env_with_viewer):
     Return the results of the training, including the best trajectory and actions.
     """
 
-    best_episode_actions, best_episode_trajectory = training_loop(env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"])
+    best_episode_actions, best_episode_trajectory = training_loop(
+        env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"]
+    )
 
     if not best_episode_actions:
         print("Warning: No best episode actions recorded. Returning empty list.")
@@ -345,10 +356,14 @@ def get_training_results(env_with_viewer):
         best_episode_trajectory = []
     return best_episode_actions, best_episode_trajectory, settings
 
-# Save commands to a Python file
-def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x, drone_y, target_x, target_y, target_z):
 
-    #%% Convert actions to commands
+# Save commands to a Python file
+def writing_commands(
+    best_episode_actions, room_x, room_y, room_height,
+    drone_x, drone_y, target_x, target_y, target_z,
+):
+
+    # Convert actions to commands
     actions_to_commands = {
         0: "forward",
         1: "backward",
@@ -359,11 +374,6 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
     }
 
     room_description = f"(0 0, {room_x - 1} 0, {room_x - 1} {room_y - 1}, 0 {room_y - 1}, 0 0)"
-
-    raw_commands = []
-    for direction, distance in best_episode_actions:
-        command = f"{actions_to_commands[direction]}({distance})"
-        raw_commands.append(command)
 
     # Smoothing raw_commands
     smoothed_commands = smooth_commands(best_episode_actions)
@@ -386,7 +396,7 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
         f.write(f"    locate({drone_x}, {drone_y}, {initial_heading})\n")
 
         # Add movement commands
-        f.write(f"    takeOff()\n")
+        f.write("    takeOff()\n")
 
         # Smoothing raw_commands
         for direction, distance in smoothed_commands:
@@ -400,11 +410,11 @@ def writing_commands(best_episode_actions, room_x, room_y, room_height, drone_x,
 
         # Target position
         low_x = target_x - 1 if target_x > 1 else 0
-        high_x = target_x + 1 if target_x<room_x else room_x
+        high_x = target_x + 1 if target_x < room_x else room_x
         low_y = target_y - 1 if target_y > 1 else 0
-        high_y = target_y + 1 if target_y<room_y else room_y
+        high_y = target_y + 1 if target_y < room_y else room_y
         low_z = target_z - 1 if target_z > 1 else 0
-        high_z = target_z + 1 if target_z<room_height else room_height
+        high_z = target_z + 1 if target_z < room_height else room_height
 
         f.write(f"createTargetIn({low_x}, {low_y}, {low_z}, "
                 f"{high_x}, {high_y}, {high_z})\n")
@@ -420,18 +430,15 @@ def initialize_q_table():
     space_z = round(5 + (settings["room_height"] ** 0.45))
     return np.zeros((space_x, space_y, space_z, 6, 100))
 
+
 # Function to reset the environment and Q-table
-def reset_environment(new_target_position ,env_with_viewer):
+def reset_environment(new_target_position, env_with_viewer):
     global q_table
 
     # Update settings for the new target
     settings["target_x"] = new_target_position[0]
     settings["target_y"] = new_target_position[1]
     settings["target_z"] = new_target_position[2]
-
-    # Reset the drone's position
-    settings["drone_x"] = settings["drone_x"]
-    settings["drone_y"] = settings["drone_y"]
 
     # Reset Q-table to avoid biases
     q_table = initialize_q_table()
@@ -440,9 +447,13 @@ def reset_environment(new_target_position ,env_with_viewer):
     env_with_viewer.target_position = np.array([settings["target_x"], settings["target_y"], settings["target_z"]])
 
 
-# %% Room creation & Hyperparameters & Commands writing
-room_description = f"(0 0, {settings["room_x"]-1} 0, {settings["room_x"]-1} {settings["room_y"]-1}, 0 {settings["room_y"]-1}, 0 0)"
-room = createRoom(room_description, settings["room_height"]-1)
+room_description = (
+    f"(0 0, {settings['room_x']-1} 0, {settings['room_x']-1} {settings['room_y']-1}, "
+    f"0 {settings['room_y']-1}, 0 0)"
+)
+room = createRoom(room_description, settings["room_height"] - 1)
 drone = createDrone("DroneVirtual", "ViewerTkMPL")
-env_with_viewer = DroneVirtual(drone, room, room_size=(
-settings["room_x"] - 1, settings["room_y"] - 1, settings["room_height"] - 1))
+env_with_viewer = DroneVirtual(
+    drone, room,
+    room_size=(settings["room_x"] - 1, settings["room_y"] - 1, settings["room_height"] - 1),
+)
