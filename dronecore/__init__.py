@@ -2,6 +2,7 @@
 Ensemble de classes qui permettent de simuler la programmation d'un drone devant
 naviguer dans un environnement clos (une pièce).
 """
+from __future__ import annotations
 
 import time
 from abc import ABC, abstractmethod

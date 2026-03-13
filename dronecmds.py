@@ -4,6 +4,7 @@ le programme de navigation d'un drone dans une pièce (son environnement).
 Ce drone est virtuel, mais toutes les procédures représentent des commandes
 qui existent pour un drone de type Tello Edu.
 """
+from __future__ import annotations
 
 from dronecore.roomshply import RoomShp
 from dronecore.dronevirt import DroneVirtual
