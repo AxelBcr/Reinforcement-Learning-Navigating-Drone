@@ -71,6 +71,8 @@ L'interface de visualisation à utiliser.
 
 
 def display():
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.display()
 
 
@@ -99,6 +101,9 @@ def createDrone(droneId: str, viewerId: str, progfunc=None):
     global drone, viewer
     print(f"Creating drone with ID: {droneId}, Viewer ID: {viewerId}")
 
+    if room is None:
+        raise RuntimeError("Room must be created before creating a drone. Call createRoom() first.")
+
     if droneId == DRONE_VIRTUAL:
         print("Initializing DroneVirtual...")
         drone = DroneVirtual()
@@ -124,6 +129,8 @@ def createTarget():
     Créer une cible n'est pas obligatoire.
     """
     global target
+    if room is None:
+        raise RuntimeError("Room must be created before creating a target. Call createRoom() first.")
     target = room.getRandomPosition()
     print("Target : x={} y={} z={}".format(target.x, target.y, target.z))
 
@@ -141,6 +148,8 @@ def createTargetIn(x1: float, y1: float, z1: float, x2: float, y2: float, z2: fl
     :param z2 hauteur supérieure droite du cube
     """
     global target
+    if room is None:
+        raise RuntimeError("Room must be created before creating a target. Call createRoom() first.")
     target = room.getRandomPosition(Position(x1, y1, z1), Position(x2, y2, z2))
     print("Target : x={} y={} z={}".format(target.x, target.y, target.z))
 
@@ -152,6 +161,8 @@ def locate(x, y, heading):
     :param y: ordonnée du drone
     :param heading: cap du drone en degrés
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.locate(x, y, heading, room)
     drone.display()
 
@@ -161,6 +172,8 @@ def takeOff():
     Le drone décolle et va se positionner en vol stationnaire (à environ 80cm du sol dans le cas
     du drone tello edu). Si le drone est déjà en vol, la commande est sans effet.
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.takeOff()
     drone.display()
 
@@ -169,6 +182,8 @@ def land():
     """
     Le drone se pose droit sous lui. Sans effet si le drone est déjà posé.
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.land()
     drone.display()
 
@@ -178,6 +193,8 @@ def forward(n: int):
     Le drone avance droit devant lui de n cm. Sans effet si le drone n’a pas décollé.
     :param n: nombre de cm
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.forward(n)
     drone.display()
 
@@ -188,6 +205,8 @@ def backward(n: int):
     Sans effet si le drone n’a pas décollé.
     :param n: nombre de cm
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.backward(n)
     drone.display()
 
@@ -198,6 +217,8 @@ def goUp(n: int):
     Sans effet si le drone n’a pas décollé.
     :param n: nombre de cm
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.goUp(n)
     drone.display()
 
@@ -208,6 +229,8 @@ def goDown(n: int):
     Sans effet si le drone n’a pas décollé.
     :param n: nombre de cm
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.goDown(n)
     drone.display()
 
@@ -218,6 +241,8 @@ def goLeft(n: int):
     Sans effet si le drone n’a pas décollé.
     :param n: nombre de cm
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.goLeft(n)
     drone.display()
 
@@ -228,6 +253,8 @@ def goRight(n: int):
     Sans effet si le drone n’a pas décollé.
     :param n: nombre de cm
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.goRight(n)
     drone.display()
 
@@ -238,6 +265,8 @@ def rotateLeft(n: int):
     Sans effet si le drone n’a pas décollé.
     :param n: nombre de degrés
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.rotateLeft(n)
     drone.display()
 
@@ -248,6 +277,8 @@ def rotateRight(n: int):
     Sans effet si le drone n’a pas décollé.
     :param n: nombre de degrés
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     drone.rotateRight(n)
     drone.display()
 
@@ -257,6 +288,8 @@ def isTargetDetected() -> bool:
     Interroge le drone pour savoir s'il a trouvé la cible.
     :return: True si la cible est détectée, False sinon
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     return drone.isTargetDetected()
 
 
@@ -265,6 +298,8 @@ def getPosition() -> Position:
     Fonction qui retourne la position courante du drone.
     :return: la position
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     return drone.position
 
 
@@ -273,6 +308,8 @@ def getHeight() -> int:
     Fonction qui retourne l’altitude du drone (approximative pour un drone réel), en cm.
     :return: l'altitude courante en cm
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     return drone.getHeight()
 
 
@@ -282,6 +319,8 @@ def getHeading(unit: str = "radian") -> float | int:
     :param unit:
     :return: le cap
     """
+    if drone is None:
+        raise RuntimeError("Drone is not initialized. Call createDrone() first.")
     if unit == "radian":
         return drone.getHeading()
     else:
