@@ -45,8 +45,6 @@ def main():
         reset_environment(new_target_position, env_with_viewer)
 
         # Runs the training with new positions, and updates the commands
-        training_loop(env_with_viewer, settings["num_episodes"], settings["max_steps_per_episode"])
-
         best_episode_actions, best_episode_trajectory, settings = get_training_results(env_with_viewer)
 
         writing_commands(best_episode_actions, settings["room_x"], settings["room_y"], settings["room_height"],

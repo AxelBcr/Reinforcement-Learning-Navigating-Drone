@@ -80,8 +80,8 @@ class DroneVirtual:
 
         # Discretize observation space
         self.state_bins = [
-            np.linspace(0, self.room_width, round(5 + (self.room_width ** 0.45))),
             np.linspace(0, self.room_depth, round(5 + (self.room_depth ** 0.45))),
+            np.linspace(0, self.room_width, round(5 + (self.room_width ** 0.45))),
             np.linspace(0, self.room_height, round(5 + (self.room_height ** 0.45))),
         ]
         self.observation_space = spaces.Box(
@@ -121,7 +121,7 @@ class DroneVirtual:
         """
         # Fixed drone initial position
         self.state = np.array([settings["drone_x"], settings["drone_y"], 80])  # takeOff() initial position is at 80
-        self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
+        self.drone.locate(self.state[0], self.state[1], 90, self.room)
 
         # Reset variables
         self.visited_states = set()
@@ -138,13 +138,13 @@ class DroneVirtual:
         direction, distance = action
 
         x, y, z = self.state
-        if direction == 0 and y + distance < self.room_depth:  # Move Up
+        if direction == 0 and y + distance < self.room_width:  # Move Up
             y += distance
         elif direction == 1 and y - distance > 0:  # Move Down
             y -= distance
         elif direction == 2 and x - distance > 0:  # Move Left
             x -= distance
-        elif direction == 3 and x + distance < self.room_width:  # Move Right
+        elif direction == 3 and x + distance < self.room_depth:  # Move Right
             x += distance
         elif direction == 4 and z + distance < self.room_height:  # Ascend
             z += distance
@@ -152,7 +152,7 @@ class DroneVirtual:
             z -= distance
 
         self.state = np.array([x, y, z])
-        self.drone.locate(self.state[0], self.state[1], self.state[2], self.room)
+        self.drone.locate(self.state[0], self.state[1], 90, self.room)
 
         # Increment step count
         self.step_count += 1
@@ -263,7 +263,7 @@ def smooth_commands(commands):
         while distance >= max_distance:
             smoothed_commands.append((direction, max_distance))
             distance -= max_distance
-        if distance > 0:
+        if distance >= 20:  # drone minimum movement is 20 cm
             smoothed_commands.append((direction, distance))
 
     return smoothed_commands
@@ -283,10 +283,10 @@ def training_loop(env_with_viewer, num_episodes, max_steps_per_episode):
     epsilon_decay = 0.92  # Randomness decay rate
     epsilon_min = 0.01  # Minimum randomness rate
 
-    # Rounded discretize observation states
-    space_x: int = round(5 + (settings["room_x"] ** 0.45))
-    space_y: int = round(5 + (settings["room_y"] ** 0.45))
-    space_z: int = round(5 + (settings["room_height"] ** 0.45))
+    # Rounded discretize observation states (match environment's state_bins)
+    space_x: int = round(5 + ((settings["room_x"] - 1) ** 0.45))
+    space_y: int = round(5 + ((settings["room_y"] - 1) ** 0.45))
+    space_z: int = round(5 + ((settings["room_height"] - 1) ** 0.45))
 
     q_table = np.zeros((space_x, space_y, space_z, 6, 100))  # Shape: (x_bins, y_bins, z_bins, directions, distances)
     best_episode_reward = -float('inf')
@@ -406,15 +406,15 @@ def writing_commands(
         f.write("    land()\n")
 
         # Room setup
-        f.write(f"createRoom('{room_description}', {room_height})\n")
+        f.write(f"createRoom('{room_description}', {room_height - 1})\n")
 
-        # Target position
-        low_x = target_x - 1 if target_x > 1 else 0
-        high_x = target_x + 1 if target_x < room_x else room_x
-        low_y = target_y - 1 if target_y > 1 else 0
-        high_y = target_y + 1 if target_y < room_y else room_y
-        low_z = target_z - 1 if target_z > 1 else 0
-        high_z = target_z + 1 if target_z < room_height else room_height
+        # Target position (bounds must be strictly inside the room)
+        low_x = max(target_x - 1, 1)
+        high_x = min(target_x + 1, room_x - 2)
+        low_y = max(target_y - 1, 1)
+        high_y = min(target_y + 1, room_y - 2)
+        low_z = max(target_z - 1, 1)
+        high_z = min(target_z + 1, room_height - 2)
 
         f.write(f"createTargetIn({low_x}, {low_y}, {low_z}, "
                 f"{high_x}, {high_y}, {high_z})\n")
@@ -425,9 +425,9 @@ def writing_commands(
 
 # Training parameters (resetting Q-table)
 def initialize_q_table():
-    space_x = round(5 + (settings["room_x"] ** 0.45))
-    space_y = round(5 + (settings["room_y"] ** 0.45))
-    space_z = round(5 + (settings["room_height"] ** 0.45))
+    space_x = round(5 + ((settings["room_x"] - 1) ** 0.45))
+    space_y = round(5 + ((settings["room_y"] - 1) ** 0.45))
+    space_z = round(5 + ((settings["room_height"] - 1) ** 0.45))
     return np.zeros((space_x, space_y, space_z, 6, 100))
 
 
