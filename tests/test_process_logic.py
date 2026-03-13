@@ -302,5 +302,27 @@ class TestSmoothCommandsMinMove(unittest.TestCase):
         self.assertEqual(result, [(0, 490), (0, 20)])
 
 
+class TestCreateRoomReturn(unittest.TestCase):
+    """createRoom must return the RoomShp object so callers get a non-None room."""
+
+    def test_create_room_returns_room(self):
+        """createRoom should return the created RoomShp instance."""
+        import sys
+        from unittest.mock import MagicMock
+        # Mock tkinter and GUI dependencies so dronecmds can be imported headlessly
+        for mod in [
+            'tkinter', 'tkinter.ttk', 'idlelib', 'idlelib.tooltip',
+            'matplotlib', 'matplotlib.pyplot', 'matplotlib.backends',
+            'matplotlib.backends.backend_tkagg',
+            'PIL', 'PIL.Image', 'PIL.ImageTk',
+        ]:
+            sys.modules.setdefault(mod, MagicMock())
+        from dronecmds import createRoom
+        room = createRoom('(0 0, 499 0, 499 499, 0 499, 0 0)', 499)
+        self.assertIsNotNone(room)
+        self.assertIsInstance(room, RoomShp)
+        self.assertEqual(room.getHeight(), 499)
+
+
 if __name__ == '__main__':
     unittest.main()
